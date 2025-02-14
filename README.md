@@ -5,6 +5,9 @@
 
 If any questions, welcome for Issues & PR
 
+### TODO
+1. Active Cable Support
+
 ### Overview
 
 This Project is used to perform PD Logic for Host based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
