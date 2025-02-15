@@ -257,7 +257,7 @@ pd_state_t* USBPD_FSM;
     BIT[15:8] - DFP_D Pin Assignments supported
     BIT7 - USB 2.0 signaling not required when set
     BIT6 - Receptacle indication, 0: plug; 1: receptacle;
-    BIT[5:2] - Physical Signaling, LSB bit should always set
+    BIT[5:2] - Physical Signaling
     BIT[1:0] - Port capability
         00 = Reserved
         01 = UFP_D capable (including Branch Device)
@@ -469,14 +469,16 @@ void PD_Load_VDM_DP_CFG(void* buf, struct PD_FSM* PD_Ctl) {
         BIT[31:16] - Reserved
         BIT[15:8] - Configure UFP_U Pin Assignment
             00000000 = De-select pin assignment.
-            00000001 = Select Pin Assignment A.
-            00000010 = Select Pin Assignment B.
-            00000100 = Select Pin Assignment C.
-            00001000 = Select Pin Assignment D.
-            00010000 = Select Pin Assignment E.
-            00100000 = Select Pin Assignment F.
+            00000001 = Select Pin Assignment A
+            00000010 = Select Pin Assignment B
+            00000100 = Select Pin Assignment C
+            00001000 = Select Pin Assignment D
+            00010000 = Select Pin Assignment E
+            00100000 = Select Pin Assignment F
+            Pin assignments A, B, and F have been deprecated.
         BIT[7:6] - Reserved
-        BIT[5:2] - Signaling for Transport of DisplayPort Protocol, 0001 for DP1.3
+        BIT[5:2] - Signaling for Transport of DisplayPort Protocol
+            0: USB; 1: DP1.3;
         BIT[1:0] - Select Configuration
             00 = Set configuration for USB
             01 = Set configuration for UFP_U as DFP_D
@@ -750,7 +752,7 @@ int PD_SendRecv_VDM(int cmd, int timeout, void* data, size_t len, pd_state_t* PD
     return -1;
 }
 
-void PD_Test_IDENT(pd_state_t* PD_Ctl) {
+int PD_Test_IDENT(pd_state_t* PD_Ctl) {
     pd_vdo_ident_t vdo;
     
     int len = PD_PARSE_SIZE(PD_Ctl->Rx_Buf) - 1;
@@ -767,11 +769,10 @@ void PD_Test_IDENT(pd_state_t* PD_Ctl) {
     printf("modal: %d\r\n", PD_PARSE_MODAL(vdo.id_header));
     printf("xid: 0x%08x\r\n", vdo.cert_state);
 
-    if(PD_PARSE_PROD_TYPE(vdo.id_header) != 0x05) return; //Alternate Mode Adapter
-    if(len < 4) {
-        printf("AMA Detect but VDO not found\r\n");
-        return;
-    }
+    if(!PD_PARSE_MODAL(vdo.id_header)) return -1;
+
+    if(PD_PARSE_PROD_TYPE(vdo.id_header) != 0x05) return 0; //Alternate Mode Adapter
+    if(len < 4) return 0;
     printf("hw_ver: 0x%04x\r\n", PD_PARSE_HW_VER(vdo.product_type));
     printf("fw_ver: 0x%04x\r\n", PD_PARSE_FW_VER(vdo.product_type));
     printf("vbus_req: %d\r\n", PD_PARSE_USB_VBUS(vdo.product_type));
@@ -779,7 +780,7 @@ void PD_Test_IDENT(pd_state_t* PD_Ctl) {
     printf("vconn_watt: %d\r\n", PD_PARSE_VCONN_WATT(vdo.product_type));
     printf("usbss_sig: %d\r\n", PD_PARSE_USBSS_SIG(vdo.product_type));
     printf("usbss_dir: 0x%02x\r\n", PD_PARSE_USBSS_DIR(vdo.product_type));
-    return;
+    return 0;
 }
 
 int PD_Test_SVID(pd_state_t* PD_Ctl) {
@@ -894,7 +895,11 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
             PD_Ctl->VDM_Status = STA_VDM_IDLE;
             break;
         }
-        PD_Test_IDENT(PD_Ctl);
+        if(PD_Test_IDENT(PD_Ctl)) {
+            printf("Device doesn't support Modal Operation\r\n");
+            PD_Ctl->VDM_Status = STA_VDM_IDLE;
+            break;
+        }
         PD_Ctl->VDM_Status = STA_DISC_SVID;
         break;
     case STA_DISC_SVID: //Get Supported SVID
