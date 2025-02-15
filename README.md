@@ -6,11 +6,13 @@
 If any questions, welcome for Issues & PR   
 如果有疑问，欢迎提交Issues或PR
 
+#### TODO
 
-#### Known Issues
+1. Active Cable Support
+2. Validation Hardware Implementation
 
-1. No Active Cable Support   
-1. 无主动线缆支持
+1. 主动线缆支持
+2. 验证硬件实现
 
 ### Overview
 
@@ -23,7 +25,7 @@ This Project implements state machines defined in:
 3. VESA DisplayPort Alt Mode on USB Type-C Standard. Ver 1.3/1.4.
 
 Recommended:    
-1. TOSHIBA TC358867XBG， MIPI DPI(RGB Parallel) to DisplayPort 2-lane Bridge IC
+1. TOSHIBA TC358867XBG， MIPI DSI or DPI(RGB Parallel) to DisplayPort 2-lane Bridge IC
 2. WCH CH482D DPDT HighSpeed MUX for DP Signal
 3. WCH CH442E DPDT Analog Mux for SBU
 
