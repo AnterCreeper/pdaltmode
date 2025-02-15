@@ -11,9 +11,6 @@ If any questions, welcome for Issues & PR
 1. Active Cable Support
 2. Validation Hardware Implementation
 
-1. 主动线缆支持
-2. 验证硬件实现
-
 ### Overview
 
 This Project is used to perform PD Logic for Host based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
@@ -33,9 +30,6 @@ Recommended:
 
 1. Download and Open with MounRiver Studio II
 2. Compile and Run
-
-1. 下载并使用MounRiver Studio II打开
-2. 编译运行
 
 #### License
 
