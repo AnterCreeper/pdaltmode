@@ -1,7 +1,10 @@
+//for compatible with QFN20 CH32X035F8U6
+#define DEBUG               DEBUG_UART2
+#define SDI_PRINT           SDI_PR_CLOSE
+#define TARGET_DEBUG
+
 #include "debug.h"
 #include <ch32x035_usbpd.h>
-
-#define TARGET_DEBUG
 
 void __assert(const char* str, uint32_t line) {
     printf("assert fault at line %d, reason %s\r\n", line, str);
@@ -15,8 +18,12 @@ void __assert(const char* str, uint32_t line) {
 void SYS_INIT() {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
     SystemCoreClockUpdate();
-    USART_Printf_Init(115200);
     Delay_Init();
+#if SDI_PRINT == SDI_PR_CLOSE
+    USART_Printf_Init(115200);
+#else
+    SDI_Printf_Enable();
+#endif
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     printf("SystemClk: %d\r\n", SystemCoreClock);
     printf("ChipID: %08x\r\n", DBGMCU_GetCHIPID());
