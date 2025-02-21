@@ -1,15 +1,20 @@
 # USB PD Alt-mode Negotiation
 
-** WARNING! This Project is not been fully tested, use at your own risk! **   
-** 警告！该项目未经充分的测试，使用需要你自己衡量！**
-
 If any questions, welcome for Issues & PR   
 如果有疑问，欢迎提交Issues或PR
 
-#### TODO
+**WARNING! This Project is not been fully tested, use at your own risk!**   
+**警告！该项目未经充分的测试，使用需要你自己衡量**
 
-1. Active Cable Support
-2. Validation Hardware Implementation
+### License
+
+This project is licensed under the LGPL-2.1-or-later license. **DO NOT** download or clone this project until you have read and agree the LICENSE.     
+该项目采用 LGPL-2.1 以及之后版本 授权。当你下载或克隆项目时，默认已经阅读并同意该协定。
+
+### TODO
+
+1. Active Cable Support (However I have no such one. lol)
+2. Validation Hardware Implementation (W.I.P)
 
 ### Overview
 
@@ -21,16 +26,10 @@ This Project implements state machines defined in:
 2. Universal Serial Bus Type-C Cable and Connector Specification Ver 2.2.
 3. VESA DisplayPort Alt Mode on USB Type-C Standard. Ver 1.3/1.4.
 
-Recommended:    
-1. TOSHIBA TC358867XBG， MIPI DSI or DPI(RGB Parallel) to DisplayPort 2-lane Bridge IC
-2. WCH CH482D DPDT HighSpeed MUX for DP Signal
-3. WCH CH442E DPDT Analog Mux for SBU
+Doc. 1 and 2 can be accessed from https://github.com/usb-c/USB-Type-C   
+For Doc. 3, since **DISTRIBUTION TO NON-MEMBERS IS PROHIBITED**, contact me at [wangzhihao9@hotmail.com](mailto:wangzhihao9@hotmail.com)
 
 ### Usage
 
-1. Download and Open with MounRiver Studio II
+1. Download and Open with MounRiver Studio II [Download Page](http://www.mounriver.com/download)
 2. Compile and Run
-
-#### License
-
-This project is licensed under the LGPL-2.1-or-later license.
