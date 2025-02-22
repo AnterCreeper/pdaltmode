@@ -20,7 +20,7 @@
 				"name": "*.wvproj"
 			}
 		],
-		"projectName": "usbhid",
+		"projectName": "pdaltmode",
 		"architecture": "RISC-V",
 		"projectType": "c"
 	},
@@ -591,7 +591,7 @@
 	"flashConfig": {
 		"mcutype": "CH32X035",
 		"address": "0x08000000",
-		"target_path": "obj/usbhid.hex",
+		"target_path": "obj/pdaltmode.hex",
 		"clkSpeed": "High",
 		"debug_interface_mode": "1-wire serial",
 		"erase": true,
@@ -670,8 +670,8 @@
 			"showDebugOutputTimestamps": true
 		},
 		"reserve": {
-			"PROGRAM_NAME": "obj/usbhid.elf",
-			"PROJECT_ATTR": "usbhid",
+			"PROGRAM_NAME": "obj/pdaltmode.elf",
+			"PROJECT_ATTR": "pdaltmode",
 			"PROJECT_BUILD_CONFIG_AUTO_ATTR": true,
 			"PROJECT_BUILD_CONFIG_ID_ATTR": "",
 			"ATTR_BUILD_BEFORE_LAUNCH_ATTR": 2,
