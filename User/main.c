@@ -515,7 +515,6 @@ void PD_Send(void* buf, size_t len, int sop) {
     USBPD->CONTROL |= BMC_START;
 
     while((USBPD->STATUS & IF_TX_END) == 0);
-
     USBPD->STATUS |= IF_TX_END;
 
     USBPD->PORT_CC1 &= ~CC_LVE;
@@ -594,21 +593,16 @@ int PD_Recv_Retry(uint8_t type, int timeout, pd_state_t* PD_Ctl) {
 }
 
 void PD_Enter_ListenMode(pd_state_t* PD_Ctl) {
-    /*
-    USBPD->CONFIG |= PD_ALL_CLR;
-    USBPD->CONFIG &= ~PD_ALL_CLR;
-    USBPD->CONFIG |= IE_RX_ACT | IE_RX_RESET;
-    USBPD->DMA = (uint32_t)PD_Ctl->Rx_Buf;
-    USBPD->CONTROL &= ~PD_TX_EN;
-    USBPD->BMC_CLK_CNT = UPD_TMR_RX_24M;
-    */
     PD_Ctl->IRQ_ret = 0;
+    USBPD->CONFIG |= IE_RX_ACT | IE_RX_RESET;
     NVIC_EnableIRQ(USBPD_IRQn);
     return;
 }
 
 void PD_Exit_ListenMode(pd_state_t* PD_Ctl) {
+    USBPD->CONFIG &= ~(IE_RX_ACT | IE_RX_RESET);
     NVIC_DisableIRQ(USBPD_IRQn);
+    PD_Ctl->IRQ_ret = 0;
     return;
 }
 
@@ -633,9 +627,9 @@ void USBPD_IRQHandler() {
         PD_Send(USBPD_FSM->Tx_Buf, 2, UPD_SOP0);
         if(USBPD_FSM->IRQ_func) {
             int (*Handler)(size_t, pd_state_t*) = USBPD_FSM->IRQ_func;
-            NVIC_EnableIRQ(USBPD_IRQn);
-            USBPD_FSM->IRQ_ret = Handler(len, USBPD_FSM);
             NVIC_DisableIRQ(USBPD_IRQn);
+            USBPD_FSM->IRQ_ret = Handler(len, USBPD_FSM);
+            NVIC_EnableIRQ(USBPD_IRQn);
         }
     }
     return;
@@ -731,7 +725,6 @@ int PD_Delay(unsigned int ms, pd_state_t* PD_Ctl) {
         __WFI();
         if(PD_Ctl->IRQ_ret) {
             PD_Exit_ListenMode(PD_Ctl);
-            PD_Ctl->IRQ_ret = 0;
             return -1;
         }
     }
