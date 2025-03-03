@@ -1,0 +1,59 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "76c5a74b-68e9-432e-b83d-af6df3f9ddee")
+	(paper "A4")
+	(lib_symbols)
+	(text "REV: 0.1"
+		(exclude_from_sim no)
+		(at 147.32 129.54 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 5.08 5.08)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "1e16dbf3-91af-41c3-b6e0-b4d7227c57a4")
+	)
+	(text "2025-02-20"
+		(exclude_from_sim no)
+		(at 147.32 119.126 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 5.08 5.08)
+				(thickness 0.508)
+				(bold yes)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "39e171c2-5e54-4663-a97c-18c8451ce486")
+	)
+	(text "Type-C DP Alt-mode EVB"
+		(exclude_from_sim no)
+		(at 147.32 81.534 0)
+		(effects
+			(font
+				(face "Times New Roman")
+				(size 8.89 8.89)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "556492df-88b7-4faa-a694-628d9c649e78")
+	)
+	(text "Schematic Document\n"
+		(exclude_from_sim no)
+		(at 147.32 97.79 0)
+		(effects
+			(font
+				(face "Times New Roman")
+				(size 6.35 6.35)
+				(color 0 0 0 1)
+			)
+		)
+		(uuid "f549c3ee-9848-45cd-92a7-d34cbc0ff802")
+	)
+)

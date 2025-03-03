@@ -1,0 +1,340 @@
+(footprint "LED-SMD_4P-L1.6-W1.5_WS2812B-S"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0.28375 -2.0175 0)
+		(layer "F.SilkS")
+		(uuid "cc23185b-f919-4139-b3d6-c8deecb04f2d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "WS2812B-S_1615"
+		(at 0.28375 1.843 0)
+		(layer "F.Fab")
+		(uuid "225a0d85-6e0d-40b2-b508-d27eb1e8071e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" "User:LED-SMD_4P-L1.6-W1.5_WS2812B-S"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fa5d0efb-79a9-4682-be17-2ef2a0b39a9c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20240923/E2F088EA6FD87361CAAC368A295387FD.pdf"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b9d344c3-1966-470f-b0cc-43c0b71e4117")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "17f6e487-354b-4737-97ab-b91b926131f3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer Part" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c61384a1-b8e4-41e3-bb8e-0899cbdc39fb")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer" "XINGLIGHT(成兴光)"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a9a7705f-fdd6-4005-b78a-92639060dbb9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Supplier Part" "C41413180"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "53295d66-7b0c-4cc1-8207-9ad3640d6487")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Supplier" "LCSC"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "90bf7843-d823-495a-8452-39e20fd96c9e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC Part Name" "XL-1615RGBC-WS2812B-S"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fcbe94e7-3b90-459e-8e06-3398f080527b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start -0.762 -1.016)
+		(end 0.762 -1.016)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "8e8444b0-2270-4d7f-98dd-17292212c683")
+	)
+	(fp_line
+		(start 0.762 1.016)
+		(end -0.762 1.016)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "02b2823e-409e-4310-90fb-46283c207044")
+	)
+	(fp_poly
+		(pts
+			(xy 0.01 -0.37) (xy 0.13 -0.37) (xy 0.13 0.32) (xy 0.01 0.32) (xy 0.01 0.05) (xy -0.1 0.05) (xy -0.1 -0.08)
+			(xy 0.01 -0.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "F.SilkS")
+		(uuid "997d6511-887a-4bfd-9283-da53b17ab1a1")
+	)
+	(fp_poly
+		(pts
+			(xy -1 0.4) (xy -0.365 0.4) (xy -0.365 0.527) (xy -1 0.527)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "Dwgs.User")
+		(uuid "cb604d2a-9370-487a-bd0c-ed0730eb0ac4")
+	)
+	(fp_poly
+		(pts
+			(xy -0.66 -0.04) (xy -0.58 -0.04) (xy -0.58 0.04) (xy -0.66 0.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "Dwgs.User")
+		(uuid "9b74be04-278b-40aa-b8f2-4866c3d3815e")
+	)
+	(fp_poly
+		(pts
+			(xy 0.4445 -0.4445) (xy 0.4445 -0.3175) (xy 0.6985 -0.3175) (xy 0.6985 -0.0635) (xy 0.8255 -0.0635)
+			(xy 0.8255 -0.3175) (xy 1.0795 -0.3175) (xy 1.0795 -0.4445) (xy 0.8255 -0.4445) (xy 0.8255 -0.6985)
+			(xy 0.6985 -0.6985) (xy 0.6985 -0.4445)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "Dwgs.User")
+		(uuid "621705ec-1940-4786-af54-1453e3937c04")
+	)
+	(fp_poly
+		(pts
+			(xy -0.8 -0.125) (xy -0.8 -0.725) (xy -0.4 -0.725) (xy -0.4 -0.125)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "81a6750c-7841-4781-a4c1-3689a960da0d")
+	)
+	(fp_poly
+		(pts
+			(xy -0.8 0.725) (xy -0.8 0.125) (xy -0.4 0.125) (xy -0.4 0.725)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "1f226cd4-6ef2-4ff9-84aa-d4b444c14ae8")
+	)
+	(fp_poly
+		(pts
+			(xy 0.4 -0.125) (xy 0.4 -0.725) (xy 0.8 -0.725) (xy 0.8 -0.125)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "8b3a5db4-0873-4b2e-8cd7-8f45fa8f754d")
+	)
+	(fp_poly
+		(pts
+			(xy 0.4 0.725) (xy 0.4 0.125) (xy 0.8 0.125) (xy 0.8 0.725)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "9ac642c7-d7ae-4219-ad55-7e397dce0c30")
+	)
+	(fp_line
+		(start -0.8 -0.75)
+		(end 0.8 -0.75)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "87145064-9313-4b27-9b42-1221f5a0353f")
+	)
+	(fp_line
+		(start -0.8 0.75)
+		(end -0.8 -0.75)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "9bbe62f6-4340-4227-9e93-4ae44f390828")
+	)
+	(fp_line
+		(start 0.8 -0.75)
+		(end 0.8 0.75)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "90f6d192-a6f2-483b-a0a7-baa6349db4c0")
+	)
+	(fp_line
+		(start 0.8 0.75)
+		(end -0.8 0.75)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "025c93d1-f8da-4ff0-bda9-63a4c81b6d44")
+	)
+	(fp_poly
+		(pts
+			(xy -0.74 -0.75) (xy -0.757574 -0.792426) (xy -0.8 -0.81) (xy -0.842426 -0.792426) (xy -0.86 -0.75)
+			(xy -0.842426 -0.707574) (xy -0.8 -0.69) (xy -0.757574 -0.707574)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.3")
+		(uuid "cb7713ac-1096-4710-8d44-d222b554ae94")
+	)
+	(pad "1" smd roundrect
+		(at -0.75 -0.425)
+		(size 0.8 0.65)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "b11eeb95-4261-4fc7-baf6-d233cc7b3492")
+	)
+	(pad "2" smd roundrect
+		(at 0.75 -0.425)
+		(size 0.8 0.65)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "bd70e2fa-2c70-4ff1-9a5a-746148d40aeb")
+	)
+	(pad "3" smd roundrect
+		(at -0.75 0.425)
+		(size 0.8 0.65)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "83e61da5-5a33-445b-a567-b411aa22d9ee")
+	)
+	(pad "4" smd roundrect
+		(at 0.75 0.425)
+		(size 0.8 0.65)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "eece3eb2-ce2e-406a-848e-3425deeaf077")
+	)
+	(model "${KIPRJMOD}/EASYEDA_MODELS/LED-SMD_4P-L1.6-W1.5_XL-1615RGBC-WS2812B-S.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -0)
+		)
+	)
+)
