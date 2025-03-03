@@ -20,8 +20,10 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 This Project is used to perform PD Logic for Host based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
 该项目基于来自WCH的低成本CH32X035微控制器，包含了所需的所有主机端的 USB Power Delivery 协议的功能，以实现Type-C上DisplayPort视频输出功能，可用于PCB面积紧凑场景。
 
-Besides, This Project include a validation hardware to achieve Type-C PD output, using TOSHIBA TC358867XBG to convert Video stream from Parrallel to DisplayPort Signal.   
-此外，该项目包含了一个验证硬件，采用 TOSHIBA TC358867XBG 将 RGB 并行接口 转换至 DisplayPort 信号输出。
+Besides, This Project include a validation hardware with GERBER and schematics, 4 layers JLC04161H-3313 Stacking, using TOSHIBA TC358867XBG to convert Video stream from Parrallel to DisplayPort Signal.   
+此外，该项目附有一个验证硬件，包含 GERBER 和原理图与装配图纸，四层1.6mm JLC04161H-3313叠层，采用 TOSHIBA TC358867XBG 将 RGB 并行接口 转换至 DisplayPort 信号输出。
+
+![PCB Preview Picture](https://github.com/AnterCreeper/pdaltmode/blob/main/evb-front.png?raw=true)
 
 This Project implements state machines defined in:
 1. Universal Serial Bus Power Delivery Specification Rev 2.0 Ver 1.3
