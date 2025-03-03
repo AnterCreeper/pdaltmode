@@ -31,7 +31,7 @@ This Project implements state machines defined in:
 Doc. 1 and 2 can be accessed from https://github.com/usb-c/USB-Type-C   
 For Doc. 3, since **DISTRIBUTION TO NON-MEMBERS IS PROHIBITED**, contact me at [wangzhihao9@hotmail.com](mailto:wangzhihao9@hotmail.com)
 
-For Datasheet of TC358867XBG, contact with TOSHIBA or contant me.
+Datasheet of TC358867XBG is included in the project, which include external LICENSE.
 
 ### Usage
 
