@@ -177,12 +177,12 @@ TIM3_IRQHandler:
 	.weak	handle_reset
 	.align	1
 handle_reset:
-.option push
-.option	norelax
-	// la gp, __global_pointer$
-.option	pop
+.option push 
+.option	norelax 
+	la gp, __global_pointer$
+.option	pop 
 1:
-	la sp, _eusrstack
+	la sp, _eusrstack 
 2:
 /* Load data section from flash to RAM */
 	la a0, _data_lma
@@ -190,8 +190,8 @@ handle_reset:
 	la a2, _edata
 	bgeu a1, a2, 2f
 1:
-	lw t0, 0(a0)
-	sw t0, 0(a1)
+	lw t0, (a0)
+	sw t0, (a1)
 	addi a0, a0, 4
 	addi a1, a1, 4
 	bltu a1, a2, 1b
@@ -201,7 +201,7 @@ handle_reset:
 	la a1, _ebss
 	bgeu a0, a1, 2f
 1:
-	sw zero, 0(a0)
+	sw zero, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
 2:
@@ -212,14 +212,16 @@ handle_reset:
 	li t0, 0x3
 	csrw 0x804, t0
 /* Enable global interrupt and configure privileged mode */
-   	li t0, 0x88
+   	li t0, 0x88           
    	csrw mstatus, t0
 /* Configure the interrupt vector table recognition mode and entry address mode */
  	la t0, _vector_base
-    ori t0, t0, 3
+    ori t0, t0, 3           
 	csrw mtvec, t0
 
-    jal SystemInit
+    jal  SystemInit
 	la t0, main
 	csrw mepc, t0
 	mret
+
+

@@ -42,7 +42,7 @@
 				"excludeResources": [],
 				"riscvTargetProcessor": {
 					"architecture": "rv32i",
-					"multiply_extension": false,
+					"multiply_extension": true,
 					"atomic_extension": true,
 					"floating_point": "none",
 					"compressed_extension": true,
@@ -225,13 +225,13 @@
 						"generate_map": "\"${BuildArtifactFileBaseName}.map\"",
 						"cross_reference": false,
 						"print_link_map": false,
-						"use_newlib_nano": true,
+						"use_newlib_nano": false,
 						"use_float_with_nano_printf": false,
 						"use_float_with_nano_scanf": false,
 						"do_not_use_syscalls": true,
 						"verbose": false,
 						"use_wch_printffloat": false,
-						"use_wch_printf": false,
+						"use_wch_printf": true,
 						"use_iqmath": false,
 						"other_linker_flags": ""
 					}
@@ -259,13 +259,13 @@
 						"generate_map": "\"${BuildArtifactFileBaseName}.map\"",
 						"cross_reference": false,
 						"print_link_map": false,
-						"use_newlib_nano": true,
+						"use_newlib_nano": false,
 						"use_float_with_nano_printf": false,
 						"use_float_with_nano_scanf": false,
 						"do_not_use_syscalls": true,
 						"verbose": false,
 						"use_wch_printffloat": false,
-						"use_wch_printf": false,
+						"use_wch_printf": true,
 						"use_iqmath": false,
 						"other_linker_flags": ""
 					}

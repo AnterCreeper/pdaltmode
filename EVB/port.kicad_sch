@@ -9129,7 +9129,7 @@
 				)
 			)
 		)
-		(property "Value" "120kΩ"
+		(property "Value" "180kΩ"
 			(at 53.34 176.53 90)
 			(effects
 				(font
@@ -9329,7 +9329,7 @@
 				)
 			)
 		)
-		(property "Value" "36kΩ"
+		(property "Value" "30kΩ"
 			(at 199.39 139.954 90)
 			(effects
 				(font
@@ -14101,7 +14101,7 @@
 				)
 			)
 		)
-		(property "Value" "20kΩ"
+		(property "Value" "30kΩ"
 			(at 73.66 176.53 90)
 			(effects
 				(font
@@ -14795,7 +14795,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_USB:USB_C_Receptacle_Amphenol_12401548E4-2A"
+		(property "Footprint" "User:USB_C_Receptacle_Amphenol_12401548E4-2A"
 			(at 40.64 53.34 0)
 			(effects
 				(font

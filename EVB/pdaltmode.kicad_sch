@@ -786,6 +786,19 @@
 		)
 		(uuid "4e4eff1b-99e0-406c-a16f-500241e23172")
 	)
+	(text "Change R9,R21 to 30kΩ; R20 to 180kΩ; Change USB-C footprint."
+		(exclude_from_sim no)
+		(at 128.778 54.102 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 2.54 2.54)
+				(thickness 0.508)
+				(bold yes)
+			)
+		)
+		(uuid "71062be9-0d5c-4b67-b5d5-406908f8b34d")
+	)
 	(text "0.1"
 		(exclude_from_sim no)
 		(at 55.88 47.752 0)
@@ -824,6 +837,32 @@
 			)
 		)
 		(uuid "cf4578ca-64e4-4290-b0d8-2c08bb4e6564")
+	)
+	(text "25/03/12"
+		(exclude_from_sim no)
+		(at 35.306 54.102 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 2.54 2.54)
+				(thickness 0.508)
+				(bold yes)
+			)
+		)
+		(uuid "e97ab928-5e93-4ba4-8dc4-50fd214dcc59")
+	)
+	(text "0.2"
+		(exclude_from_sim no)
+		(at 55.88 54.102 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 2.54 2.54)
+				(thickness 0.508)
+				(bold yes)
+			)
+		)
+		(uuid "f275af51-0d2d-4abb-bd1e-a1676f37ed78")
 	)
 	(text "PAGE 4"
 		(exclude_from_sim no)

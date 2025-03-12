@@ -1,10 +1,65 @@
-//for compatible with QFN20 CH32X035F8U6
-#define DEBUG               DEBUG_UART2
-#define SDI_PRINT           SDI_PR_CLOSE
 #define TARGET_DEBUG
 
 #include "debug.h"
 #include <ch32x035_usbpd.h>
+#include <ch32x035_opa.h>
+
+#include "iic.h"
+
+#define IIC_DEV_ADR     (0x68 << 1)
+
+int IIC_WriteReg(uint16_t address, void* data, size_t len) {
+    IIC_Start();
+    IIC_SendByte(IIC_DEV_ADR | 0x0);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address >> 8);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address & 0xFF);
+    if(IIC_WaitAck()) return -1;
+    for(size_t i = 0; i < len; i++) {
+        IIC_SendByte(((uint8_t*)data)[i]);
+        if(IIC_WaitAck()) return -1;
+    }
+    IIC_Stop();
+    return 0;
+}
+
+int IIC_WriteRegI(uint16_t address, uint32_t data, size_t len) {
+    IIC_Start();
+    IIC_SendByte(IIC_DEV_ADR | 0x0);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address >> 8);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address & 0xFF);
+    if(IIC_WaitAck()) return -1;
+    for(size_t i = 0; i < len; i++) {
+        IIC_SendByte(data & 0xFF);
+        if(IIC_WaitAck()) return -1;
+        data >>= 8;
+    }
+    IIC_Stop();
+    return 0;
+}
+
+int IIC_ReadReg(uint16_t address, void* data, size_t len) {
+    IIC_Start();
+    IIC_SendByte(IIC_DEV_ADR | 0x0);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address >> 8);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address & 0xFF);
+    if(IIC_WaitAck()) return -1;
+    
+    IIC_Start();
+    IIC_SendByte(IIC_DEV_ADR | 0x1);
+    if(IIC_WaitAck()) return -1;
+    for(size_t i = 0; i < len; i++) {
+        ((uint8_t*)data)[i] = IIC_ReadByte();
+        IIC_SendACK();
+    }
+    IIC_Stop();
+    return 0;
+}
 
 void __assert(const char* str, uint32_t line) {
     printf("assert fault at line %d, reason %s\r\n", line, str);
@@ -25,8 +80,8 @@ void SYS_INIT() {
     SDI_Printf_Enable();
 #endif
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-    printf("SystemClk: %d\r\n", SystemCoreClock);
-    printf("ChipID: %08x\r\n", DBGMCU_GetCHIPID());
+    printf("sys_clk: %d\r\n", SystemCoreClock);
+    printf("chip_id: 0x%08x\r\n", DBGMCU_GetCHIPID());
     return;
 }
 
@@ -43,9 +98,63 @@ void SYS_SLP() {
     return;
 }
 
+void VSNS_INIT() {
+    printf("Enable ADC\r\n");
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure); //MCU_VSENSE
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+    GPIO_Init(GPIOA, &GPIO_InitStructure); //MCU_PGA_OUT
+
+    OPA_Unlock();
+    OPA_InitTypeDef OPA_InitStructure = {0};
+    OPA_InitStructure.OPA_NUM = OPA2;
+    OPA_InitStructure.PSEL = CHP0;
+    OPA_InitStructure.NSEL = CHN_PGA_4xIN;
+    OPA_InitStructure.Mode = OUT_IO_OUT0;
+    OPA_InitStructure.FB = FB_ON;
+    OPA_Init(&OPA_InitStructure);
+    OPA_Cmd(OPA2, ENABLE);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+    ADC_DeInit(ADC1);
+    ADC_CLKConfig(ADC1, ADC_CLK_Div6);
+    ADC_InitTypeDef ADC_InitStructure = {0};
+    ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+    ADC_InitStructure.ADC_ScanConvMode = DISABLE;
+    ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
+    ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+    ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+    ADC_InitStructure.ADC_NbrOfChannel = 1;
+    ADC_Init(ADC1, &ADC_InitStructure);
+    ADC_Cmd(ADC1, ENABLE);
+
+    return;
+}
+
+uint32_t VSNS_Read() {
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_11Cycles);
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    uint32_t vin = ADC_GetConversionValue(ADC1);
+    //vbus = (vin/2^12)*3300mV/4PGA/30kohm*(180+30)kohm
+#ifdef __riscv_mul
+    uint32_t result = (vin * 5775) >> 12;
+#else
+    uint32_t result = vin + (vin << 2);
+    result = result + (result << 3);
+    result = vin + (result << 4);
+    result = result >> 8;
+#endif
+    return result;
+}
+
 volatile uint32_t TIM1_CNT;
 
 void TIM1_INIT() {
+    printf("Enable USBPD Timer\r\n");
     NVIC_InitTypeDef NVIC_InitStructure = {0};
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {0};
 
@@ -112,37 +221,172 @@ void GPIO_PD_INIT() {
     return;
 }
 
-//TODO
-void GPIO_Toggle_INIT() {
+void GPIO_IN_INIT(GPIO_TypeDef* group, uint32_t pin) {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Pin = pin;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(group, &GPIO_InitStructure);
+    return;
+}
+
+void GPIO_OUT_INIT(GPIO_TypeDef* group, uint32_t pin, uint32_t state) {
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+    GPIO_InitStructure.GPIO_Pin = pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    printf("Enable GPIO A0\r\n");
+    GPIO_WriteBit(group, pin, state);
+    GPIO_Init(group, &GPIO_InitStructure);
     return;
 }
 
-//TODO
+void GPIO_Toggle_INIT() {
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    GPIO_OUT_INIT(GPIOA, GPIO_Pin_0, Bit_RESET); //MCU_STATUS
+    GPIO_OUT_INIT(GPIOA, GPIO_Pin_1, Bit_SET); //TYPEC_VEN#
+    GPIO_OUT_INIT(GPIOA, GPIO_Pin_3, Bit_SET); //TYPEC_SEL#
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_3, Bit_SET); //TYPEC_EN#
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_11, Bit_SET); //TYPEC_VCONN1
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_12, Bit_SET); //TYPEC_VCONN2
+
+    printf("Enable GPIO\r\n");
+    return;
+}
+
+static inline void WS2812_0() {
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    GPIOA->BCR = GPIO_Pin_0;
+    return;
+}
+
+static inline void WS2812_1() {
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BSHR = (GPIO_Pin_0 & (uint32_t)0x0000FFFF);
+    GPIOA->BCR = GPIO_Pin_0;
+    return;
+}
+
+static inline void WS2812_Reset() {
+    GPIOA->BCR = GPIO_Pin_0;
+    Delay_Us(300);
+    return;
+}
+
+#define GREEN   0x070000
+#define RED     0x000700
+#define BLUE    0x000007
+
+void WS2812_SetColor(int32_t grb) {
+    grb <<= 8;
+    for(int i = 0; i < 24; i++) {
+        if(grb < 0) WS2812_1();
+        else WS2812_0();
+        grb <<= 1;
+    }
+    WS2812_Reset();
+    return;
+}
+
+void MPD_Init(){ //Mobile Peripheral Devices
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    printf("Reset MPD\r\n");
+    GPIO_IN_INIT(GPIOB, GPIO_Pin_0); //MCU_DP_INT
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_1, Bit_RESET); //MCU_DP_RST#
+    Delay_Us(2); //tRSTON
+    GPIO_WriteBit(GPIOB, GPIO_Pin_1, Bit_SET);
+    uint32_t id;
+    IIC_ReadReg(0x0500, &id, 4);
+    printf("mpd_id: 0x%08x\r\n", id);
+    IIC_WriteRegI(0x06a0, 0x00308f, 3);
+    IIC_WriteRegI(0x07a0, 0x00300a, 3);
+    IIC_WriteRegI(0x0918, 0x0201, 2);
+    IIC_WriteRegI(0x0800, 0x03000007, 4);
+    printf("Enable MPD PLL\r\n");
+    IIC_WriteRegI(0x0900, 0x05, 1);
+    Delay_Us(500);
+    IIC_WriteRegI(0x0904, 0x05, 1);
+    Delay_Us(500);
+    IIC_WriteRegI(0x0914, 0x320245, 3);
+    IIC_WriteRegI(0x0908, 0x05, 1);
+    Delay_Us(500);
+    printf("Enable MPD Link\r\n");
+    IIC_WriteRegI(0x0800, 0x13001107, 4);
+    IIC_WriteRegI(0x0800, 0x03000007, 4);
+    uint32_t state;
+    do {
+        printf("Waiting MPD Ready\r\n");
+        Delay_Us(500);
+        IIC_ReadReg(0x0800, &state, 4);
+    } while((state & 0x10000) == 0);
+    printf("DisplayPort Link Enabled\r\n");
+    return;
+}
+
 void GPIO_Toggle_VBUS(int state){
     printf("Toggle VBUS %s\r\n", state ? "ON" : "OFF");
+    GPIO_WriteBit(GPIOA, GPIO_Pin_1, state ? Bit_RESET : Bit_SET);
     return;
 }
 
-//TODO
 void GPIO_Toggle_VCONN(int state){
-    printf("Toggle VCONN %d\r\n", state);
+    printf("Toggle VCONN\r\n");
+    //VCONN at another pin
+    if(state > 2) assert("Bad VCONN Toggle Pin");
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_11, state & 0x2 ? Bit_RESET : Bit_SET); //TYPEC_VCONN1
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_12, state & 0x1 ? Bit_RESET : Bit_SET); //TYPEC_VCONN2
     return;
 }
 
-//TODO
+void GPIO_Toggle_DPSEL(int state){
+    printf("Toggle DP MUX\r\n");
+    if(state) {
+        GPIO_OUT_INIT(GPIOA, GPIO_Pin_3, (USBPD->CONFIG & CC_SEL) ? Bit_SET : Bit_RESET); //TYPEC_SEL#
+    } else {
+        GPIO_OUT_INIT(GPIOA, GPIO_Pin_3, (USBPD->CONFIG & CC_SEL) ? Bit_RESET : Bit_SET); //TYPEC_SEL#
+    }
+    return;
+}
+
 void GPIO_Toggle_DPSIG(int state){
     printf("Toggle DP SIGNAL %s\r\n", state ? "ON" : "OFF");
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_3, state ? Bit_RESET : Bit_SET); //TYPEC_EN#
     return;
 }
 
-//TODO
 void GPIO_Toggle_HPD(int state){
     printf("Toggle DP HPD %s\r\n", state ? "H" : "L");
     return;
@@ -204,10 +448,11 @@ __attribute__ ((aligned(4))) uint8_t PD_Tx_Buf[34]; /* PD send buffer */
 
 typedef struct DP_STATUS {
     uint8_t Pos;
-    uint8_t Receptable;
+    uint8_t Enabled;
     uint8_t DFP_Pin;
     uint8_t UFP_Pin;
-    uint8_t Enabled;
+    uint32_t Link;
+    uint8_t Receptable;
 } dp_status_t;
 
 typedef struct PD_FSM {
@@ -354,6 +599,7 @@ void PD_FSM_Reset(pd_state_t* PD_Ctl) {
     PD_Ctl->IRQ_ret = 0;
 
     PD_Ctl->DP_Status.Pos = 0;
+    PD_Ctl->DP_Status.Link = 0;
     PD_Ctl->DP_Status.Enabled = DISABLE;
     return;
 }
@@ -369,7 +615,6 @@ void PD_INIT(pd_state_t* PD_Ctl) {
     printf("Enable USB PD\r\n");
 
     GPIO_PD_INIT();
-    GPIO_Toggle_INIT();
     EXTI_INIT();
     TIM1_INIT();
 
@@ -495,6 +740,7 @@ void PD_Load_VDM_DP_CFG(void* buf, struct PD_FSM* PD_Ctl) {
     uint32_t data = 0x2 | (0x1 << 2); //Set UFP_U as UFP_D and Enable DP1.3 Signaling
     //int pin = PD_Ctl->DP_Status.Receptable ? PD_Ctl->DP_Status.UFP_Pin : PD_Ctl->DP_Status.DFP_Pin;
     //TODO
+    GPIO_Toggle_DPSEL(0);
     data |= 0x4 << 8;
     ((uint32_t*)buf)[1] = data;
     return;
@@ -651,9 +897,9 @@ void PD_Connect(int passive, int ccpin, pd_state_t* PD_Ctl) {
     PD_Ctl->Connect = CONNECTED;
     PD_Ctl->Status = STA_SINK_CONNECT;
     if(ccpin == 1) {
-        USBPD->CONFIG &= ~CC_SEL;
+        USBPD->CONFIG &= ~CC_SEL;   //CC1
     } else { //attach == 2
-        USBPD->CONFIG |= CC_SEL;
+        USBPD->CONFIG |= CC_SEL;    //CC2
     }
     printf("PD Connect at CC%d\r\n", ccpin);
     if(!passive) {
@@ -828,6 +1074,7 @@ int PD_Test_MODE(pd_state_t* PD_Ctl) {
 int PD_Test_DP_S(pd_state_t* PD_Ctl) {
     uint16_t* data = PD_Ctl->Rx_Buf + 6;
     uint32_t status = (data[1] << 16) | data[0];
+    PD_Ctl->DP_Status.Link = status;
     printf("DP Info:\r\n");
     /* PD_PARSE_DP_STA, inconsistency with previous PD_PARSE_DP_CAP one...
         00 = neither DFP_D nor UFP_D connected or adapter is disabled
@@ -958,6 +1205,9 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
         PD_Load_VDM_DP_CFG(buf, PD_Ctl);
         if(PD_SendRecv_VDM(DEF_VDM_DP_CONFIG, 30, buf, 8, PD_Ctl)) break;
         GPIO_Toggle_DPSIG(SET); //Configure DP Signal and SBU Mux
+        printf("DP Alt-mode established\r\n");
+        printf("Enable DP Link\r\n");
+        MPD_CfgLink();
         printf("DP Link established\r\n");
         PD_Ctl->VDM_Status = STA_VDM_IDLE;
         break;
@@ -990,11 +1240,12 @@ int PD_Listen_Default(size_t len, pd_state_t* PD_Ctl) {
 void PD_Proc(pd_state_t* PD_Ctl) {
     switch(PD_Ctl->Status){
     case STA_DISCONNECT:
+        WS2812_SetColor(RED);
         SYS_SLP();
         break;
     case STA_SINK_CONNECT:
         GPIO_Toggle_VBUS(SET);
-        PD_Delay_Reset();
+        PD_Delay_Reset(); //Delay Start from VBUS ON
         PD_Ctl->IRQ_func = PD_Listen_Default;
         if(PD_Delay(200, PD_Ctl)) return; //tFirstSourceCap
         PD_Ctl->Status = STA_TX_SRC_CAP;
@@ -1029,9 +1280,11 @@ void PD_Proc(pd_state_t* PD_Ctl) {
         }
         break;
     case STA_TX_PS_RDY:
+        printf("vbus_mvolts: %04d\r\n", VSNS_Read());
         if(PD_Send_Retry(DEF_TYPE_PS_RDY, NULL, 0, PD_Ctl)) { //tPSTransition 500ms
             PD_Ctl->Status = STA_TX_SOFTRST;
         } else {
+            WS2812_SetColor(GREEN);
             PD_Delay_Reset();
             PD_Ctl->IRQ_func = PD_Listen_Ready;
             PD_Ctl->Status = STA_IDLE;
@@ -1060,6 +1313,10 @@ void PD_Proc(pd_state_t* PD_Ctl) {
 
 int main() {
     SYS_INIT();
+    GPIO_Toggle_INIT();
+    IIC_Init();
+    MPD_Init();
+    VSNS_INIT();
     pd_state_t PD_Ctl;
     PD_INIT(&PD_Ctl);
     while(1) {

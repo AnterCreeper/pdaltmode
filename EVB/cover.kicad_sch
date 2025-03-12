@@ -5,7 +5,7 @@
 	(uuid "76c5a74b-68e9-432e-b83d-af6df3f9ddee")
 	(paper "A4")
 	(lib_symbols)
-	(text "REV: 0.1"
+	(text "REV: 0.2"
 		(exclude_from_sim no)
 		(at 147.32 129.54 0)
 		(effects
