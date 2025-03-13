@@ -1,14 +1,26 @@
 #define TARGET_DEBUG
+//#define IGNORE_HPD
+//#define NO_MPD
+//#define FORCE_SOFTMUL
 
 #include "debug.h"
 #include <ch32x035_usbpd.h>
 #include <ch32x035_opa.h>
 
+void __assert(const char* str, uint32_t line) {
+    printf("assert fault at line %d, reason %s\r\n", line, str);
+    while(1) __WFI();
+    return;
+}
+#define assert(x) __assert(x, __LINE__)
+
+#define GETBITS(x, n, m) ((x >> n) & ((1 << (m -n + 1)) - 1))
+
 #include "iic.h"
 
 #define IIC_DEV_ADR     (0x68 << 1)
 
-int IIC_WriteReg(uint16_t address, void* data, size_t len) {
+int IIC_WriteReg(uint16_t address, uint32_t* data, size_t len) {
     IIC_Start();
     IIC_SendByte(IIC_DEV_ADR | 0x0);
     if(IIC_WaitAck()) return -1;
@@ -24,7 +36,8 @@ int IIC_WriteReg(uint16_t address, void* data, size_t len) {
     return 0;
 }
 
-int IIC_WriteRegI(uint16_t address, uint32_t data, size_t len) {
+int IIC_WriteRegI(uint16_t address, uint32_t data) {
+    const int len = 4; //TC358867XBG must transfer at 4 bytes one time
     IIC_Start();
     IIC_SendByte(IIC_DEV_ADR | 0x0);
     if(IIC_WaitAck()) return -1;
@@ -60,15 +73,6 @@ int IIC_ReadReg(uint16_t address, void* data, size_t len) {
     IIC_Stop();
     return 0;
 }
-
-void __assert(const char* str, uint32_t line) {
-    printf("assert fault at line %d, reason %s\r\n", line, str);
-    while(1) __WFI();
-    return;
-}
-#define assert(x) __assert(x, __LINE__)
-
-#define GETBITS(x, n, m) ((x >> n) & ((1 << (m -n + 1)) - 1))
 
 void SYS_INIT() {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
@@ -140,13 +144,13 @@ uint32_t VSNS_Read() {
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
     uint32_t vin = ADC_GetConversionValue(ADC1);
     //vbus = (vin/2^12)*3300mV/4PGA/30kohm*(180+30)kohm
-#ifdef __riscv_mul
-    uint32_t result = (vin * 5775) >> 12;
-#else
+#if(!defined __riscv_mul || defined FORCE_SOFTMUL)
     uint32_t result = vin + (vin << 2);
     result = result + (result << 3);
-    result = vin + (result << 4);
+    result = vin + (result << 3);
     result = result >> 8;
+#else
+    uint32_t result = (vin * 5775) >> 12;
 #endif
     return result;
 }
@@ -309,6 +313,9 @@ static inline void WS2812_Reset() {
 #define GREEN   0x070000
 #define RED     0x000700
 #define BLUE    0x000007
+#define CYAN    0x070007
+#define YELLOW  0x070700
+#define MAGENTA 0x000707
 
 void WS2812_SetColor(int32_t grb) {
     grb <<= 8;
@@ -324,35 +331,145 @@ void WS2812_SetColor(int32_t grb) {
 void MPD_Init(){ //Mobile Peripheral Devices
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     printf("Reset MPD\r\n");
-    GPIO_IN_INIT(GPIOB, GPIO_Pin_0); //MCU_DP_INT
-    GPIO_OUT_INIT(GPIOB, GPIO_Pin_1, Bit_RESET); //MCU_DP_RST#
-    Delay_Us(2); //tRSTON
+    GPIO_IN_INIT(GPIOB, GPIO_Pin_0);    //MCU_DP_INT
+    GPIO_OUT_INIT(GPIOB, GPIO_Pin_1, Bit_RESET);    //MCU_DP_RST#
+    Delay_Us(2);    //tRSTON
     GPIO_WriteBit(GPIOB, GPIO_Pin_1, Bit_SET);
-    uint32_t id;
-    IIC_ReadReg(0x0500, &id, 4);
-    printf("mpd_id: 0x%08x\r\n", id);
-    IIC_WriteRegI(0x06a0, 0x00308f, 3);
-    IIC_WriteRegI(0x07a0, 0x00300a, 3);
-    IIC_WriteRegI(0x0918, 0x0201, 2);
-    IIC_WriteRegI(0x0800, 0x03000007, 4);
+    uint32_t id = 0;
+    IIC_ReadReg(0x0500, &id, 2);
+    printf("mpd_id: 0x%04x\r\n", id);
+    //0.8v SW, 3.5dB
+    IIC_WriteRegI(0x06a0, 0x123087);    //Set DP mode
+    IIC_WriteRegI(0x07a0, 0x123002);    //Set DP mode
+    IIC_WriteRegI(0x0918, 0x0201);      //Set SYSPLL
+    IIC_WriteRegI(0x0800, 0x03000007);  //Init DP PHY
     printf("Enable MPD PLL\r\n");
-    IIC_WriteRegI(0x0900, 0x05, 1);
+    IIC_WriteRegI(0x0900, 0x05);    //Enable DP0 PLL
     Delay_Us(500);
-    IIC_WriteRegI(0x0904, 0x05, 1);
+    IIC_WriteRegI(0x0904, 0x05);    //Enable DP1 PLL
     Delay_Us(500);
-    IIC_WriteRegI(0x0914, 0x320245, 3);
-    IIC_WriteRegI(0x0908, 0x05, 1);
+    IIC_WriteRegI(0x0914, 0x320245);    //Set PXLPLL
+    IIC_WriteRegI(0x0908, 0x05);    //Enable SYSPLL
     Delay_Us(500);
-    printf("Enable MPD Link\r\n");
-    IIC_WriteRegI(0x0800, 0x13001107, 4);
-    IIC_WriteRegI(0x0800, 0x03000007, 4);
-    uint32_t state;
+    printf("Enable MPD Func\r\n");
+    IIC_WriteRegI(0x0800, 0x13001107);
+    IIC_WriteRegI(0x0800, 0x03000007);  //Reset DP PHY
+    uint32_t result;
     do {
-        printf("Waiting MPD Ready\r\n");
         Delay_Us(500);
-        IIC_ReadReg(0x0800, &state, 4);
-    } while((state & 0x10000) == 0);
-    printf("DisplayPort Link Enabled\r\n");
+        IIC_ReadReg(0x0800, &result, 4);
+    } while((result & (1 << 16)) == 0); //Query DP PHY Ready
+    printf("MPD Ready\r\n");
+    return;
+}
+
+void MPD_WriteAUXI(uint32_t bsize, uint32_t address, uint32_t data) {
+    IIC_WriteRegI(0x0668, address);
+    IIC_WriteRegI(0x066C, data);
+    IIC_WriteRegI(0x0660, 0x0008 | ((bsize - 1) << 8));
+    Delay_Ms(2);
+    return;
+}
+
+uint32_t MPD_ReadAuxI(uint32_t bsize, uint32_t address) {
+    IIC_WriteRegI(0x0668, address);
+    IIC_WriteRegI(0x0660, 0x0009 | ((bsize - 1) << 8));
+    uint32_t result = 0;
+    Delay_Ms(2);
+    IIC_ReadReg(0x067C, &result, bsize);
+    return result;
+}
+
+void MPD_ReadAux(uint32_t bsize, uint32_t address, uint32_t* data) {
+    IIC_WriteRegI(0x0668, address);
+    IIC_WriteRegI(0x0660, 0x0009 | ((bsize - 1) << 8));
+    Delay_Ms(1);
+    IIC_ReadReg(0x067C, data, bsize);
+    return;
+}
+
+int MPD_CfgLink(){
+    printf("Configure DP Link\r\n");
+    IIC_WriteRegI(0x0664, 0x00010632);  //Set DP AUX Feature, Filter ON, 1MHz, 400us timeout(50cyc@125kHz)
+    uint32_t cap = MPD_ReadAuxI(3, 0x00000);
+    printf("dp_sink_cap: 0x%06x\r\n", cap);
+    if(!cap) {
+        printf("DP AUX Timeout\r\n");
+        return -1;
+    }
+    MPD_WriteAUXI(2, 0x00100, 0x820A);  //DP Link Rate and Link Count
+    MPD_WriteAUXI(1, 0x00108, 0x01);    //DP Link Coding
+
+    printf("Start Link Training\r\n");
+    uint32_t code, status, result;
+    MPD_WriteAUXI(2, 0x00103, 0x0202);  //DP PHY Signal
+    IIC_WriteRegI(0x06E4, 0x21);        //DP0_SnkLTCtrl, AUX 00102h
+    IIC_WriteRegI(0x06D8, 0xF500002A);  //DP0_LTLoopCtrl, Set Training properties
+    IIC_WriteRegI(0x06A0, 0x00023086);
+    IIC_WriteRegI(0x06A0, 0x00023187);  //DP0_SrcCtrl, Enable Training
+    IIC_WriteRegI(0x0600, 0x21);        //DP0Ctl, Enable Output
+    do {
+        Delay_Ms(1);
+        IIC_ReadReg(0x06D0, &result, 4);
+    } while((result & (1 << 13)) == 0); //Query DP0_LTStat Link Training Status
+    code = GETBITS(result, 8, 12);
+    status = GETBITS(result, 0, 6);
+    printf("Pattern 1:\r\n");
+    printf("code: 0x%02x\r\n", code);
+    printf("status: 0x%02x\r\n", status);
+
+    IIC_WriteRegI(0x06E4, 0x22);
+    MPD_WriteAUXI(2, 0x00103, 0x0A0A);
+    IIC_WriteRegI(0x06A0, 0x00123086);
+    IIC_WriteRegI(0x06A0, 0x00123287);
+    do {
+        Delay_Ms(1);
+        IIC_ReadReg(0x06D0, &result, 4);
+    } while((result & (1 << 13)) == 0); //Query DP0_LTStat Link Training Status
+    code = GETBITS(result, 8, 12);
+    status = GETBITS(result, 0, 6);
+    printf("Pattern 2:\r\n");
+    printf("code: 0x%02x\r\n", code);
+    printf("status: 0x%02x\r\n", status);
+
+    IIC_WriteRegI(0x06A0, 0x00121087);  //Clean LT Pattern
+    MPD_WriteAUXI(1, 0x00102, 0x00);    //Clean DPCD LT Pattern
+
+    uint32_t result2[2] = {0, 0};
+    MPD_ReadAux(7, 0x00200, result2);
+    printf("Sink LT Status:\r\n");
+    printf("code0: 0x%08x\r\n", result2[0]);
+    printf("code1: 0x%08x\r\n", result2[1]);
+    
+    MPD_WriteAUXI(1, 0x0010A, 0x02);    //Set No-ASSR and Enhanced Framing
+    return 0;
+}
+
+void MPD_CfgVideo(){
+    //1920x1080@60fps
+    //Video Input Parameter
+    IIC_WriteRegI(0x0450, 0x05800100);  //VPCTRL0
+    //HTIM01, HTIM02, VTIM01, VTIM02
+    const uint32_t timing[4] = {0x0094002C, 0x00580780, 0x00240005, 0x00040438};
+    IIC_WriteReg(0x0454, (void*)timing, 16);
+    IIC_WriteRegI(0x0464, 0x01);    //Commit Timing Variable
+    IIC_WriteRegI(0x0440, 0x0600);  //DPIPXLFMT, Parrallel Input Electrical Parameter
+    //DP Main Stream Parameter
+    //DP0_VidSyncDly, DP0_TotalVal, DP0_StartVal, DP0_ActiveVal, DP0_SyncVal
+    const uint32_t timing2[5] = {0x003E0840, 0x04650898, 0x002900C0, 0x04380780, 0x8005802C};
+    IIC_WriteReg(0x0644, (void*)timing2, 20);
+    IIC_WriteRegI(0x0658, 0x1F3F0020);  //DP0_Misc
+    return;
+}
+
+void MPD_CfgTest(){
+    printf("Enable Test Color Checker Output\r\n");
+    IIC_WriteRegI(0x0A00, 0x13);    //TSTCTL
+    IIC_WriteRegI(0x0610, 0x0000473F);  //DP0_VidMNGen0, Auto
+    IIC_WriteRegI(0x0614, 0x000080AC);  //DP0_VidMNGen1, Auto
+    IIC_WriteRegI(0x0600, 0x61);
+    IIC_WriteRegI(0x0600, 0x63);    //DP0Ctl Output Enable
+    IIC_WriteRegI(0x0510, 0x0903);  //SYSCTRL, Set DP Video Source
     return;
 }
 
@@ -363,32 +480,23 @@ void GPIO_Toggle_VBUS(int state){
 }
 
 void GPIO_Toggle_VCONN(int state){
-    printf("Toggle VCONN\r\n");
-    //VCONN at another pin
+    printf("Toggle VCONN %s\r\n", state > 0 ? "ON" : "OFF");
     if(state > 2) assert("Bad VCONN Toggle Pin");
-    GPIO_OUT_INIT(GPIOB, GPIO_Pin_11, state & 0x2 ? Bit_RESET : Bit_SET); //TYPEC_VCONN1
-    GPIO_OUT_INIT(GPIOB, GPIO_Pin_12, state & 0x1 ? Bit_RESET : Bit_SET); //TYPEC_VCONN2
+    GPIO_WriteBit(GPIOB, GPIO_Pin_11, state & 0x2 ? Bit_RESET : Bit_SET); //TYPEC_VCONN1
+    GPIO_WriteBit(GPIOB, GPIO_Pin_12, state & 0x1 ? Bit_RESET : Bit_SET); //TYPEC_VCONN2
     return;
 }
 
 void GPIO_Toggle_DPSEL(int state){
-    printf("Toggle DP MUX\r\n");
-    if(state) {
-        GPIO_OUT_INIT(GPIOA, GPIO_Pin_3, (USBPD->CONFIG & CC_SEL) ? Bit_SET : Bit_RESET); //TYPEC_SEL#
-    } else {
-        GPIO_OUT_INIT(GPIOA, GPIO_Pin_3, (USBPD->CONFIG & CC_SEL) ? Bit_RESET : Bit_SET); //TYPEC_SEL#
-    }
+    int sel = state ^ ((USBPD->CONFIG & CC_SEL) ? Bit_RESET : Bit_SET);
+    printf("Toggle DP MUX %s\r\n", sel ? "Normal" : "Flip");
+    GPIO_WriteBit(GPIOA, GPIO_Pin_3, sel); //TYPEC_SEL#
     return;
 }
 
 void GPIO_Toggle_DPSIG(int state){
     printf("Toggle DP SIGNAL %s\r\n", state ? "ON" : "OFF");
-    GPIO_OUT_INIT(GPIOB, GPIO_Pin_3, state ? Bit_RESET : Bit_SET); //TYPEC_EN#
-    return;
-}
-
-void GPIO_Toggle_HPD(int state){
-    printf("Toggle DP HPD %s\r\n", state ? "H" : "L");
+    GPIO_WriteBit(GPIOB, GPIO_Pin_3, state ? Bit_RESET : Bit_SET); //TYPEC_EN#
     return;
 }
 
@@ -400,6 +508,7 @@ typedef enum {
     STA_ENTER_MODE,
     STA_DP_S_UPDATE,
     STA_DP_CONFIG,
+    STA_MPD_CONFIG,
 } VDM_STATUS;
 
 typedef enum {
@@ -452,6 +561,7 @@ typedef struct DP_STATUS {
     uint8_t DFP_Pin;
     uint8_t UFP_Pin;
     uint32_t Link;
+    uint8_t LT; //If Link Trained
     uint8_t Receptable;
 } dp_status_t;
 
@@ -601,18 +711,19 @@ void PD_FSM_Reset(pd_state_t* PD_Ctl) {
     PD_Ctl->DP_Status.Pos = 0;
     PD_Ctl->DP_Status.Link = 0;
     PD_Ctl->DP_Status.Enabled = DISABLE;
+    PD_Ctl->DP_Status.LT = 0;
     return;
 }
 
 void PD_PHY_Reset(pd_state_t* PD_Ctl) {
-    GPIO_Toggle_VBUS(RESET);
     GPIO_Toggle_VCONN(RESET);
+    GPIO_Toggle_VBUS(RESET);
     PD_FSM_Reset(PD_Ctl);
     return;
 }
 
 void PD_INIT(pd_state_t* PD_Ctl) {
-    printf("Enable USB PD\r\n");
+    printf("Enable USBPD\r\n");
 
     GPIO_PD_INIT();
     EXTI_INIT();
@@ -902,6 +1013,8 @@ void PD_Connect(int passive, int ccpin, pd_state_t* PD_Ctl) {
         USBPD->CONFIG |= CC_SEL;    //CC2
     }
     printf("PD Connect at CC%d\r\n", ccpin);
+    GPIO_Toggle_VBUS(SET);
+    PD_Delay_Reset(); //Delay Start from VBUS ON
     if(!passive) {
         GPIO_Toggle_VCONN(ccpin);
     }
@@ -1009,9 +1122,10 @@ int PD_Test_IDENT(pd_state_t* PD_Ctl) {
     printf("VID: 0x%04x\r\n", PD_PARSE_USB_VID(vdo.id_header));
     printf("PID: 0x%04x\r\n", PD_PARSE_PROD_ID(vdo.product));
     printf("bcd: 0x%04x\r\n", PD_PARSE_PROD_BCD(vdo.product));
-    printf("type: %d\r\n", PD_PARSE_PROD_TYPE(vdo.id_header));
-    printf("host: %d\r\n", PD_PARSE_USB_HOST(vdo.id_header));
-    printf("device: %d\r\n", PD_PARSE_USB_DEVICE(vdo.id_header));
+    printf("prod_type: %d\r\n", PD_PARSE_PROD_TYPE(vdo.id_header));
+    printf("is_ama: %d\r\n", PD_PARSE_PROD_TYPE(vdo.id_header) == 0x05);
+    printf("usb_host: %d\r\n", PD_PARSE_USB_HOST(vdo.id_header));
+    printf("usb_device: %d\r\n", PD_PARSE_USB_DEVICE(vdo.id_header));
     printf("modal: %d\r\n", PD_PARSE_MODAL(vdo.id_header));
     printf("xid: 0x%08x\r\n", vdo.cert_state);
 
@@ -1019,6 +1133,7 @@ int PD_Test_IDENT(pd_state_t* PD_Ctl) {
 
     if(PD_PARSE_PROD_TYPE(vdo.id_header) != 0x05) return 0; //Alternate Mode Adapter
     if(len < 4) return 0;
+    printf("AMA Info:\r\n");
     printf("hw_ver: 0x%04x\r\n", PD_PARSE_HW_VER(vdo.product_type));
     printf("fw_ver: 0x%04x\r\n", PD_PARSE_FW_VER(vdo.product_type));
     printf("vbus_req: %d\r\n", PD_PARSE_USB_VBUS(vdo.product_type));
@@ -1026,6 +1141,8 @@ int PD_Test_IDENT(pd_state_t* PD_Ctl) {
     printf("vconn_watt: %d\r\n", PD_PARSE_VCONN_WATT(vdo.product_type));
     printf("usbss_sig: %d\r\n", PD_PARSE_USBSS_SIG(vdo.product_type));
     printf("usbss_dir: 0x%02x\r\n", PD_PARSE_USBSS_DIR(vdo.product_type));
+
+    if(!PD_PARSE_USB_VCONN(vdo.product_type)) GPIO_Toggle_VCONN(RESET);
     return 0;
 }
 
@@ -1075,13 +1192,14 @@ int PD_Test_DP_S(pd_state_t* PD_Ctl) {
     uint16_t* data = PD_Ctl->Rx_Buf + 6;
     uint32_t status = (data[1] << 16) | data[0];
     PD_Ctl->DP_Status.Link = status;
-    printf("DP Info:\r\n");
+    //printf("DP Link Info:\r\n");
     /* PD_PARSE_DP_STA, inconsistency with previous PD_PARSE_DP_CAP one...
         00 = neither DFP_D nor UFP_D connected or adapter is disabled
         01 = DFP_D Connected
         10 = UFP_D Connected
         11 = Both DFP_D and UFP_D Connected
     */
+    /*
     printf("enabled: %d\r\n", PD_PARSE_DP_ENABLED(status));
     printf("connected: %d\r\n", PD_PARSE_DP_STA(status));
     printf("low_power: %d\r\n", PD_PARSE_DP_LP(status));
@@ -1090,6 +1208,7 @@ int PD_Test_DP_S(pd_state_t* PD_Ctl) {
     printf("irq: %d\r\n", PD_PARSE_DP_IRQ(status));
     printf("usb_req: %d\r\n", PD_PARSE_DP_USB(status));
     printf("exit_req: %d\r\n", PD_PARSE_DP_EXIT(status));
+    */
     if(!PD_PARSE_DP_ENABLED(status)) return -1;
     if(!PD_PARSE_DP_STA_UFP_D(status)) return -1;
     return 0;
@@ -1109,13 +1228,15 @@ int PD_Listen_Ready(size_t len, pd_state_t* PD_Ctl) {
         if(PD_PARSE_CMD(PD_Ctl->Rx_Buf) == DEF_VDM_ATTENTION) {
             PD_Load_VDM_CMDTYPE(DEF_CMDTYPE_ACK, buf, PD_Ctl);
             if(PD_Send_Retry_Rst(DEF_TYPE_VENDOR_DEFINED, buf, 4, PD_Ctl)) return -1;
-            GPIO_Toggle_HPD(PD_Test_DP_HPD(PD_Ctl));
-            int result = PD_Test_DP_S(PD_Ctl) == 0;
-            if(PD_Ctl->DP_Status.Enabled != result) {
-                if(result) PD_Ctl->VDM_Status = STA_DP_CONFIG;
-                PD_Ctl->DP_Status.Enabled = result;
+            int new_enabled = PD_Test_DP_S(PD_Ctl) == 0;
+            //transition
+            if(PD_Ctl->DP_Status.Enabled != new_enabled) {
+                if(new_enabled && !PD_Ctl->DP_Status.LT) PD_Ctl->VDM_Status = STA_DP_CONFIG;
+                PD_Ctl->DP_Status.Enabled = new_enabled;
                 return -1;
             }
+            //hot-plug detect
+            if(PD_PARSE_DP_HPD(PD_Ctl->DP_Status.Link)) PD_Ctl->VDM_Status = STA_MPD_CONFIG;
         } else {
             PD_Load_VDM_CMDTYPE(DEF_CMDTYPE_NAK, buf, PD_Ctl);
             if(PD_Send_Retry_Rst(DEF_TYPE_VENDOR_DEFINED, buf, 4, PD_Ctl)) return -1;
@@ -1198,22 +1319,46 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
     case STA_DP_CONFIG:
         PD_Ctl->DP_Status.Enabled = ENABLE;
         PD_Delay_Reset();
-        printf("Perform DP negotiation cycle\r\n");
+        printf("Perform DP Aux HPD cycle\r\n");
         GPIO_Toggle_DPSIG(RESET);
         if(PD_Delay(5, PD_Ctl)) return;
         PD_Load_VDM(DEF_SVID_DISPLAYPORT, DEF_VDM_DP_CONFIG, buf, PD_Ctl);
         PD_Load_VDM_DP_CFG(buf, PD_Ctl);
         if(PD_SendRecv_VDM(DEF_VDM_DP_CONFIG, 30, buf, 8, PD_Ctl)) break;
         GPIO_Toggle_DPSIG(SET); //Configure DP Signal and SBU Mux
-        printf("DP Alt-mode established\r\n");
-        printf("Enable DP Link\r\n");
-        MPD_CfgLink();
-        printf("DP Link established\r\n");
+#ifdef IGNORE_HPD
+        PD_Ctl->VDM_Status = STA_MPD_CONFIG;
+#else
+        PD_Ctl->VDM_Status = PD_PARSE_DP_HPD(PD_Ctl->DP_Status.Link) ? STA_MPD_CONFIG : STA_VDM_IDLE;
+#endif
+        break;
+    case STA_MPD_CONFIG:
+#ifndef IGNORE_HPD
+        if(PD_Ctl->DP_Status.LT) {
+            PD_Ctl->VDM_Status = STA_VDM_IDLE;
+            break;
+        }
+#endif
+        PD_Enter_ListenMode(PD_Ctl);
+#ifndef NO_MPD
+        if(!MPD_CfgLink()) {
+            MPD_CfgVideo();
+            MPD_CfgTest();
+            WS2812_SetColor(BLUE);
+            PD_Ctl->DP_Status.LT = 1;
+        } else {
+            WS2812_SetColor(YELLOW);
+            PD_Ctl->DP_Status.LT = 0;
+        }
+#endif
+        PD_Exit_ListenMode(PD_Ctl);
         PD_Ctl->VDM_Status = STA_VDM_IDLE;
         break;
     case STA_VDM_IDLE:
         if(PD_Delay(200, PD_Ctl)) return;
         break;
+    default:
+        assert("Unexpected PD VDM FSM");
     }
     return;
 }
@@ -1244,8 +1389,6 @@ void PD_Proc(pd_state_t* PD_Ctl) {
         SYS_SLP();
         break;
     case STA_SINK_CONNECT:
-        GPIO_Toggle_VBUS(SET);
-        PD_Delay_Reset(); //Delay Start from VBUS ON
         PD_Ctl->IRQ_func = PD_Listen_Default;
         if(PD_Delay(200, PD_Ctl)) return; //tFirstSourceCap
         PD_Ctl->Status = STA_TX_SRC_CAP;
@@ -1315,7 +1458,9 @@ int main() {
     SYS_INIT();
     GPIO_Toggle_INIT();
     IIC_Init();
+#ifndef NO_MPD
     MPD_Init();
+#endif
     VSNS_INIT();
     pd_state_t PD_Ctl;
     PD_INIT(&PD_Ctl);
