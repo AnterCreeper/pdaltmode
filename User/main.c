@@ -390,7 +390,7 @@ void MPD_ReadAux(uint32_t bsize, uint32_t address, uint32_t* data) {
 
 int MPD_CfgLink(){
     printf("Configure DP Link\r\n");
-    IIC_WriteRegI(0x0664, 0x00010632);  //Set DP AUX Feature, Filter ON, 1MHz, 400us timeout(50cyc@125kHz)
+    IIC_WriteRegI(0x0664, 0x00010732);  //Set DP AUX Feature
     uint32_t cap = MPD_ReadAuxI(3, 0x00000);
     printf("dp_sink_cap: 0x%06x\r\n", cap);
     if(!cap) {
@@ -464,12 +464,19 @@ void MPD_CfgVideo(){
 
 void MPD_CfgTest(){
     printf("Enable Test Color Checker Output\r\n");
-    IIC_WriteRegI(0x0A00, 0x13);    //TSTCTL
+    IIC_WriteRegI(0x0A00, 0xffffff13);  //TSTCTL
     IIC_WriteRegI(0x0610, 0x0000473F);  //DP0_VidMNGen0, Auto
     IIC_WriteRegI(0x0614, 0x000080AC);  //DP0_VidMNGen1, Auto
     IIC_WriteRegI(0x0600, 0x61);
     IIC_WriteRegI(0x0600, 0x63);    //DP0Ctl Output Enable
     IIC_WriteRegI(0x0510, 0x0903);  //SYSCTRL, Set DP Video Source
+
+    Delay_Ms(10);
+    uint32_t sys, irq;
+    IIC_ReadReg(0x0508, &sys, 4);
+    IIC_ReadReg(0x0220, &irq, 4);
+    printf("mpd_sys: 0x%08x\r\n", sys);
+    printf("mpd_irq: 0x%08x\r\n", irq);
     return;
 }
 
@@ -978,9 +985,10 @@ void USBPD_IRQHandler() {
         return;
     }
     if(USBPD->STATUS & IF_RX_ACT) {
-        size_t len = USBPD->BMC_BYTE_CNT;
         USBPD->STATUS |= IF_RX_ACT;
-        PD_Load_Header(DEF_TYPE_GOODCRC, USBPD_FSM);
+        size_t len = USBPD->BMC_BYTE_CNT;
+        Delay_Us(20);
+        PD_Load_Header_ID(DEF_TYPE_GOODCRC, PD_PARSE_MSGID(USBPD_FSM->Rx_Buf), USBPD_FSM);
         PD_Send(USBPD_FSM->Tx_Buf, 2, UPD_SOP0);
         if(USBPD_FSM->IRQ_func) {
             int (*Handler)(size_t, pd_state_t*) = USBPD_FSM->IRQ_func;
@@ -1192,14 +1200,14 @@ int PD_Test_DP_S(pd_state_t* PD_Ctl) {
     uint16_t* data = PD_Ctl->Rx_Buf + 6;
     uint32_t status = (data[1] << 16) | data[0];
     PD_Ctl->DP_Status.Link = status;
-    //printf("DP Link Info:\r\n");
+
+    printf("DP Link Info:\r\n");
     /* PD_PARSE_DP_STA, inconsistency with previous PD_PARSE_DP_CAP one...
         00 = neither DFP_D nor UFP_D connected or adapter is disabled
         01 = DFP_D Connected
         10 = UFP_D Connected
         11 = Both DFP_D and UFP_D Connected
     */
-    /*
     printf("enabled: %d\r\n", PD_PARSE_DP_ENABLED(status));
     printf("connected: %d\r\n", PD_PARSE_DP_STA(status));
     printf("low_power: %d\r\n", PD_PARSE_DP_LP(status));
@@ -1208,7 +1216,7 @@ int PD_Test_DP_S(pd_state_t* PD_Ctl) {
     printf("irq: %d\r\n", PD_PARSE_DP_IRQ(status));
     printf("usb_req: %d\r\n", PD_PARSE_DP_USB(status));
     printf("exit_req: %d\r\n", PD_PARSE_DP_EXIT(status));
-    */
+
     if(!PD_PARSE_DP_ENABLED(status)) return -1;
     if(!PD_PARSE_DP_STA_UFP_D(status)) return -1;
     return 0;
