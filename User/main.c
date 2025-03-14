@@ -1,7 +1,18 @@
 #define TARGET_DEBUG
+#define TARGET_VERSION  "0.2"
 //#define IGNORE_HPD
 //#define NO_MPD
 //#define FORCE_SOFTMUL
+
+#ifdef __clang
+#define TARGET_COMPILER "clang"
+#else
+#ifdef __GNUC__
+#define TARGET_COMPILER "gcc"
+#else
+#define TARGET_COMPILER "Unknown"
+#endif
+#endif
 
 #include "debug.h"
 #include <ch32x035_usbpd.h>
@@ -18,11 +29,11 @@ void __assert(const char* str, uint32_t line) {
 
 #include "iic.h"
 
-#define IIC_DEV_ADR     (0x68 << 1)
+#define IIC_DEV_ADR     0x68    //7b1101000
 
 int IIC_WriteReg(uint16_t address, uint32_t* data, size_t len) {
     IIC_Start();
-    IIC_SendByte(IIC_DEV_ADR | 0x0);
+    IIC_SendByte((IIC_DEV_ADR << 1) | 0x0);
     if(IIC_WaitAck()) return -1;
     IIC_SendByte(address >> 8);
     if(IIC_WaitAck()) return -1;
@@ -39,7 +50,7 @@ int IIC_WriteReg(uint16_t address, uint32_t* data, size_t len) {
 int IIC_WriteRegI(uint16_t address, uint32_t data) {
     const int len = 4; //TC358867XBG must transfer at 4 bytes one time
     IIC_Start();
-    IIC_SendByte(IIC_DEV_ADR | 0x0);
+    IIC_SendByte((IIC_DEV_ADR << 1) | 0x0);
     if(IIC_WaitAck()) return -1;
     IIC_SendByte(address >> 8);
     if(IIC_WaitAck()) return -1;
@@ -56,7 +67,7 @@ int IIC_WriteRegI(uint16_t address, uint32_t data) {
 
 int IIC_ReadReg(uint16_t address, void* data, size_t len) {
     IIC_Start();
-    IIC_SendByte(IIC_DEV_ADR | 0x0);
+    IIC_SendByte((IIC_DEV_ADR << 1) | 0x0);
     if(IIC_WaitAck()) return -1;
     IIC_SendByte(address >> 8);
     if(IIC_WaitAck()) return -1;
@@ -64,7 +75,7 @@ int IIC_ReadReg(uint16_t address, void* data, size_t len) {
     if(IIC_WaitAck()) return -1;
     
     IIC_Start();
-    IIC_SendByte(IIC_DEV_ADR | 0x1);
+    IIC_SendByte((IIC_DEV_ADR << 1) | 0x1);
     if(IIC_WaitAck()) return -1;
     for(size_t i = 0; i < len; i++) {
         ((uint8_t*)data)[i] = IIC_ReadByte();
@@ -72,6 +83,55 @@ int IIC_ReadReg(uint16_t address, void* data, size_t len) {
     }
     IIC_Stop();
     return 0;
+}
+
+int IIC_ReadRegI(uint16_t address, size_t len) {
+    IIC_Start();
+    IIC_SendByte((IIC_DEV_ADR << 1) | 0x0);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address >> 8);
+    if(IIC_WaitAck()) return -1;
+    IIC_SendByte(address & 0xFF);
+    if(IIC_WaitAck()) return -1;
+    
+    IIC_Start();
+    IIC_SendByte((IIC_DEV_ADR << 1) | 0x1);
+    if(IIC_WaitAck()) return -1;
+    uint32_t result = 0;
+    for(size_t i = 0; i < len; i++) {
+        result = result | (IIC_ReadByte() << (i << 3));
+        IIC_SendACK();
+    }
+    IIC_Stop();
+    return result;
+}
+
+#define ALPHABET_OFFSET ('A' - 1)
+#define NUMBER_OFFSET ('0')
+
+void SYS_Test_Arch(char str[8]) {
+    uint32_t arch = __get_MARCHID();
+    str[0] = GETBITS(arch, 26, 30) + ALPHABET_OFFSET;
+    str[1] = GETBITS(arch, 21, 25) + ALPHABET_OFFSET;
+    str[2] = GETBITS(arch, 16, 20) + ALPHABET_OFFSET;
+    str[3] = '-';
+    str[4] = GETBITS(arch, 10, 14) + ALPHABET_OFFSET;
+    str[5] = GETBITS(arch, 5, 9) + NUMBER_OFFSET;
+    str[6] = GETBITS(arch, 0, 4) + ALPHABET_OFFSET;
+    str[7] = '\0';
+    return;
+}
+
+void SYS_Test_ISA(char str[32]) {
+    uint32_t isa = __get_MISA();
+    __builtin_memset(str, 0, 32);
+    for(int i = 0; i < 26; i++) {
+        if(isa & (1 << i)) {
+            *str = i + ALPHABET_OFFSET + 1;
+            str++;
+        }
+    }
+    return;
 }
 
 void SYS_INIT() {
@@ -84,8 +144,21 @@ void SYS_INIT() {
     SDI_Printf_Enable();
 #endif
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+    printf("SYS PWR ON\r\n");
+    printf("Enable Debug\r\n");
+    printf("pdaltmode version %s by Anter\r\n", TARGET_VERSION);
+    printf("%s %s %s\r\n", TARGET_COMPILER, __VERSION__, __DATE__);
     printf("sys_clk: %d\r\n", SystemCoreClock);
     printf("chip_id: 0x%08x\r\n", DBGMCU_GetCHIPID());
+
+    /*
+    char str0[8], str1[32];
+    SYS_Test_Arch(str0);
+    SYS_Test_ISA(str1);
+    printf("chip_arch: %s RV%d%s\r\n", str0, 1 << (GETBITS(__get_MISA(), 30, 31) + 4), str1);
+    printf("chip_impid: 0x%08x\r\n", __get_MIMPID());
+    printf("chip_vendor: 0x%08x\r\n", __get_MVENDORID());
+    */
     return;
 }
 
@@ -445,7 +518,66 @@ int MPD_CfgLink(){
     return 0;
 }
 
+#define EDID_DEV_ADR        0x50    //7b1010000
+#define EDID_BASE_ADDRESS   0x00
+
+int MPD_ReadEDID(int bsize, uint8_t address, uint8_t* data) {
+    IIC_WriteRegI(0x0668, address);
+    IIC_WriteRegI(0x0660, 0x0014); //IIC Initate Write Address
+    Delay_Ms(1);
+    uint32_t code = IIC_ReadRegI(0x068C, 3);
+    if(GETBITS(code, 16, 18) || GETBITS(code, 4, 7)) {
+        printf("DDC EDID NACK\r\n");
+        return -1;
+    }
+    
+    IIC_WriteRegI(0x066C, EDID_BASE_ADDRESS);
+    IIC_WriteRegI(0x0660, 0x0004 | ((bsize - 1) << 8)); //IIC Send Data
+    Delay_Ms(1);
+
+    IIC_WriteRegI(0x0668, address);
+    IIC_WriteRegI(0x0660, 0x0015); //IIC Initate Read Address
+    Delay_Ms(1);
+
+    uint32_t pos = 0;
+    while(bsize) {
+        uint32_t buf[4]; //max 16bytes
+        uint32_t send_byte = bsize > 16 ? 16 : bsize;
+        IIC_WriteRegI(0x0660, 0x0005 | ((send_byte - 1) << 8));
+        Delay_Ms(1);
+        uint32_t code = IIC_ReadRegI(0x068C, 3);
+        //1. TC358867XBG aux_status can produce invalid data
+        //2. aux_bytes shall be valid only when aux_status = 0x4 during IIC read over AUX
+        uint32_t recv_byte = GETBITS(code, 4, 7) == 0x4 ? 0 : GETBITS(code, 8, 15);
+        IIC_ReadReg(0x067C, buf, recv_byte);
+        __builtin_memcpy(&data[pos], buf, recv_byte);
+        pos = pos + recv_byte;
+        bsize = bsize - recv_byte;
+    }
+
+    IIC_WriteRegI(0x0660, 0x0011); //IIC STOP
+    return 0;
+}
+
+void MPD_Test_EDID(uint32_t data[64]){
+    uint8_t* code = (uint8_t*)data;
+    printf("EDID:");
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 32; j++) printf("%s%02x", j ? " " : "\r\n", code[(i << 5) + j]);
+    }
+    printf("\r\n");
+    return;
+}
+
 void MPD_CfgVideo(){
+    uint32_t cap = MPD_ReadAuxI(2, 0x00005);
+    printf("dp_sink_type: 0x%04x\r\n", cap);
+
+    uint32_t edid[64]; //256bytes
+    if(!MPD_ReadEDID(256, EDID_DEV_ADR, (uint8_t*)edid)) {
+        MPD_Test_EDID(edid);
+    }
+
     //1920x1080@60fps
     //Video Input Parameter
     IIC_WriteRegI(0x0450, 0x05800100);  //VPCTRL0
