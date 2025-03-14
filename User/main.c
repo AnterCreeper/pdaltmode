@@ -31,7 +31,7 @@ void __assert(const char* str, uint32_t line) {
 
 #define IIC_DEV_ADR     0x68    //7b1101000
 
-int IIC_WriteReg(uint16_t address, uint32_t* data, size_t len) {
+int IIC_WriteReg(uint16_t address, void* data, size_t len) {
     IIC_Start();
     IIC_SendByte((IIC_DEV_ADR << 1) | 0x0);
     if(IIC_WaitAck()) return -1;
@@ -411,9 +411,13 @@ void MPD_Init(){ //Mobile Peripheral Devices
     uint32_t id = 0;
     IIC_ReadReg(0x0500, &id, 2);
     printf("mpd_id: 0x%04x\r\n", id);
-    //0.8v SW, 3.5dB
-    IIC_WriteRegI(0x06a0, 0x123087);    //Set DP mode
-    IIC_WriteRegI(0x07a0, 0x123002);    //Set DP mode
+    uint32_t pin = 0;
+    IIC_ReadReg(0x0508, &pin, 1);
+    printf("mpd_pin: 0x%02x\r\n", pin);
+
+    //1.2v SW, 0.0dB
+    IIC_WriteRegI(0x06a0, 0x033085);    //Set DP mode
+    IIC_WriteRegI(0x07a0, 0x033000);    //Set DP mode
     IIC_WriteRegI(0x0918, 0x0201);      //Set SYSPLL
     IIC_WriteRegI(0x0800, 0x03000007);  //Init DP PHY
     printf("Enable MPD PLL\r\n");
@@ -421,7 +425,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     Delay_Us(500);
     IIC_WriteRegI(0x0904, 0x05);    //Enable DP1 PLL
     Delay_Us(500);
-    IIC_WriteRegI(0x0914, 0x320245);    //Set PXLPLL
+    IIC_WriteRegI(0x0914, 0x320445);    //Set PXLPLL
     IIC_WriteRegI(0x0908, 0x05);    //Enable SYSPLL
     Delay_Us(500);
     printf("Enable MPD Func\r\n");
@@ -463,24 +467,24 @@ void MPD_ReadAux(uint32_t bsize, uint32_t address, uint32_t* data) {
 
 int MPD_CfgLink(){
     printf("Configure DP Link\r\n");
-    IIC_WriteRegI(0x0664, 0x00010732);  //Set DP AUX Feature
-    uint32_t cap = MPD_ReadAuxI(3, 0x00000);
-    printf("dp_sink_cap: 0x%06x\r\n", cap);
+    //IIC_WriteRegI(0x0664, 0x00010732);  //Set DP AUX Feature
+    uint32_t cap = MPD_ReadAuxI(4, 0x00000);
+    printf("dp_sink_cap: 0x%08x\r\n", cap);
     if(!cap) {
         printf("DP AUX Timeout\r\n");
         return -1;
     }
-    MPD_WriteAUXI(2, 0x00100, 0x820A);  //DP Link Rate and Link Count
+    MPD_WriteAUXI(2, 0x00100, 0x0206);  //DP Link Rate and Link Count
     MPD_WriteAUXI(1, 0x00108, 0x01);    //DP Link Coding
 
     printf("Start Link Training\r\n");
     uint32_t code, status, result;
-    MPD_WriteAUXI(2, 0x00103, 0x0202);  //DP PHY Signal
+    MPD_WriteAUXI(2, 0x00103, 0x0303);  //DP PHY Signal
     IIC_WriteRegI(0x06E4, 0x21);        //DP0_SnkLTCtrl, AUX 00102h
     IIC_WriteRegI(0x06D8, 0xF500002A);  //DP0_LTLoopCtrl, Set Training properties
-    IIC_WriteRegI(0x06A0, 0x00023086);
-    IIC_WriteRegI(0x06A0, 0x00023187);  //DP0_SrcCtrl, Enable Training
-    IIC_WriteRegI(0x0600, 0x21);        //DP0Ctl, Enable Output
+    IIC_WriteRegI(0x06A0, 0x00033084);
+    IIC_WriteRegI(0x06A0, 0x00033185);  //DP0_SrcCtrl, Enable Training
+    IIC_WriteRegI(0x0600, 0x01);        //DP0Ctl, Enable Output
     do {
         Delay_Ms(1);
         IIC_ReadReg(0x06D0, &result, 4);
@@ -492,9 +496,9 @@ int MPD_CfgLink(){
     printf("status: 0x%02x\r\n", status);
 
     IIC_WriteRegI(0x06E4, 0x22);
-    MPD_WriteAUXI(2, 0x00103, 0x0A0A);
-    IIC_WriteRegI(0x06A0, 0x00123086);
-    IIC_WriteRegI(0x06A0, 0x00123287);
+    MPD_WriteAUXI(2, 0x00103, 0x0303);
+    IIC_WriteRegI(0x06A0, 0x00033084);
+    IIC_WriteRegI(0x06A0, 0x00033285);
     do {
         Delay_Ms(1);
         IIC_ReadReg(0x06D0, &result, 4);
@@ -505,8 +509,8 @@ int MPD_CfgLink(){
     printf("code: 0x%02x\r\n", code);
     printf("status: 0x%02x\r\n", status);
 
-    IIC_WriteRegI(0x06A0, 0x00121087);  //Clean LT Pattern
-    MPD_WriteAUXI(1, 0x00102, 0x00);    //Clean DPCD LT Pattern
+    IIC_WriteRegI(0x06A0, 0x00033085);  //Clean LT Pattern
+    MPD_WriteAUXI(1, 0x00102, 0x20);    //Clean DPCD LT Pattern
 
     uint32_t result2[2] = {0, 0};
     MPD_ReadAux(7, 0x00200, result2);
@@ -514,16 +518,16 @@ int MPD_CfgLink(){
     printf("code0: 0x%08x\r\n", result2[0]);
     printf("code1: 0x%08x\r\n", result2[1]);
     
-    MPD_WriteAUXI(1, 0x0010A, 0x02);    //Set No-ASSR and Enhanced Framing
+    MPD_WriteAUXI(1, 0x0010A, 0x00);    //Set No-ASSR and Enhanced Framing
     return 0;
 }
 
 #define EDID_DEV_ADR        0x50    //7b1010000
 #define EDID_BASE_ADDRESS   0x00
 
-int MPD_ReadEDID(int bsize, uint8_t address, uint8_t* data) {
-    IIC_WriteRegI(0x0668, address);
-    IIC_WriteRegI(0x0660, 0x0014); //IIC Initate Write Address
+int MPD_ReadEDID(void* data, int bsize) {
+    IIC_WriteRegI(0x0668, EDID_DEV_ADR);
+    IIC_WriteRegI(0x0660, 0x0014); //Initate Write(Address only)
     Delay_Ms(1);
     uint32_t code = IIC_ReadRegI(0x068C, 3);
     if(GETBITS(code, 16, 18) || GETBITS(code, 4, 7)) {
@@ -532,30 +536,25 @@ int MPD_ReadEDID(int bsize, uint8_t address, uint8_t* data) {
     }
     
     IIC_WriteRegI(0x066C, EDID_BASE_ADDRESS);
-    IIC_WriteRegI(0x0660, 0x0004 | ((bsize - 1) << 8)); //IIC Send Data
+    IIC_WriteRegI(0x0660, 0x0004); //Send Register Address, 1 byte
     Delay_Ms(1);
 
-    IIC_WriteRegI(0x0668, address);
-    IIC_WriteRegI(0x0660, 0x0015); //IIC Initate Read Address
+    IIC_WriteRegI(0x0660, 0x0015); //Initate Read(Address only)
     Delay_Ms(1);
 
-    uint32_t pos = 0;
     while(bsize) {
-        uint32_t buf[4]; //max 16bytes
         uint32_t send_byte = bsize > 16 ? 16 : bsize;
-        IIC_WriteRegI(0x0660, 0x0005 | ((send_byte - 1) << 8));
+        IIC_WriteRegI(0x0660, 0x0005 | ((send_byte - 1) << 8)); //IIC Receive Data
         Delay_Ms(1);
         uint32_t code = IIC_ReadRegI(0x068C, 3);
-        //1. TC358867XBG aux_status can produce invalid data
-        //2. aux_bytes shall be valid only when aux_status = 0x4 during IIC read over AUX
-        uint32_t recv_byte = GETBITS(code, 4, 7) == 0x4 ? 0 : GETBITS(code, 8, 15);
-        IIC_ReadReg(0x067C, buf, recv_byte);
-        __builtin_memcpy(&data[pos], buf, recv_byte);
-        pos = pos + recv_byte;
+        //FIXME: TC358867XBG aux_status can produce invalid data
+        uint32_t recv_byte = /*GETBITS(code, 4, 7) == 0x4 ? 0 : */GETBITS(code, 8, 15);
+        IIC_ReadReg(0x067C, data, recv_byte);
+        data = data + recv_byte;
         bsize = bsize - recv_byte;
     }
 
-    IIC_WriteRegI(0x0660, 0x0011); //IIC STOP
+    IIC_WriteRegI(0x0660, 0x0011); //STOP
     return 0;
 }
 
@@ -570,15 +569,17 @@ void MPD_Test_EDID(uint32_t data[64]){
 }
 
 void MPD_CfgVideo(){
+    uint32_t pm = MPD_ReadAuxI(1, 0x00600);
+    printf("pm: %02x\r\n", pm);
     uint32_t cap = MPD_ReadAuxI(2, 0x00005);
     printf("dp_sink_type: 0x%04x\r\n", cap);
 
     uint32_t edid[64]; //256bytes
-    if(!MPD_ReadEDID(256, EDID_DEV_ADR, (uint8_t*)edid)) {
+    if(!MPD_ReadEDID(edid, 256)) {
         MPD_Test_EDID(edid);
     }
 
-    //1920x1080@60fps
+    //1920x1080p @30fps
     //Video Input Parameter
     IIC_WriteRegI(0x0450, 0x05800100);  //VPCTRL0
     //HTIM01, HTIM02, VTIM01, VTIM02
@@ -590,25 +591,34 @@ void MPD_CfgVideo(){
     //DP0_VidSyncDly, DP0_TotalVal, DP0_StartVal, DP0_ActiveVal, DP0_SyncVal
     const uint32_t timing2[5] = {0x003E0840, 0x04650898, 0x002900C0, 0x04380780, 0x8005802C};
     IIC_WriteReg(0x0644, (void*)timing2, 20);
-    IIC_WriteRegI(0x0658, 0x1F3F0020);  //DP0_Misc
+    IIC_WriteRegI(0x0658, 0x033F0020);  //DP0_Misc
     return;
 }
 
 void MPD_CfgTest(){
     printf("Enable Test Color Checker Output\r\n");
-    IIC_WriteRegI(0x0A00, 0xffffff13);  //TSTCTL
-    IIC_WriteRegI(0x0610, 0x0000473F);  //DP0_VidMNGen0, Auto
-    IIC_WriteRegI(0x0614, 0x000080AC);  //DP0_VidMNGen1, Auto
-    IIC_WriteRegI(0x0600, 0x61);
-    IIC_WriteRegI(0x0600, 0x63);    //DP0Ctl Output Enable
-    IIC_WriteRegI(0x0510, 0x0903);  //SYSCTRL, Set DP Video Source
+    IIC_WriteRegI(0x0A00, 0xFFFFFF13);  //TSTCTL
+    IIC_WriteRegI(0x0610, 0x00003B91);  //DP0_VidMNGen0, Auto
+    IIC_WriteRegI(0x0614, 0x00008118);  //DP0_VidMNGen1, Auto
+    IIC_WriteRegI(0x0600, 0x41);
+    IIC_WriteRegI(0x0600, 0x43);    //DP0Ctl Output Enable
+    IIC_WriteRegI(0x0510, 0x0103);  //SYSCTRL, Set DP Video Source
 
-    Delay_Ms(10);
+    Delay_Ms(2);
     uint32_t sys, irq;
     IIC_ReadReg(0x0508, &sys, 4);
     IIC_ReadReg(0x0220, &irq, 4);
     printf("mpd_sys: 0x%08x\r\n", sys);
     printf("mpd_irq: 0x%08x\r\n", irq);
+    return;
+}
+
+void MPD_CfgScreen(){
+    uint32_t result2[2] = {0, 0};
+    MPD_ReadAux(7, 0x00200, result2);
+    printf("Sink LT Status:\r\n");
+    printf("code0: 0x%08x\r\n", result2[0]);
+    printf("code1: 0x%08x\r\n", result2[1]);
     return;
 }
 
