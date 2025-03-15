@@ -1,0 +1,8 @@
+*.o
+/obj/pdaltmode.elf
+/obj/pdaltmode.hex
+/obj/pdaltmode.lst
+/obj/pdaltmode.map
+/EVB/fp-info-cache
+/EVB/pdaldmode.kicad_prl
+/EVB/pdaltmode-backups/
