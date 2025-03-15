@@ -3,6 +3,7 @@
 //#define IGNORE_HPD
 //#define NO_MPD
 //#define FORCE_SOFTMUL
+#define FLIP_SEL 0    //debug only, set 0 for normal
 
 #ifdef __clang
 #define TARGET_COMPILER "clang"
@@ -144,8 +145,7 @@ void SYS_INIT() {
     SDI_Printf_Enable();
 #endif
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-    printf("SYS PWR ON\r\n");
-    printf("Enable Debug\r\n");
+    printf("\x1b[2j"); //Clean Screen
     printf("pdaltmode version %s by Anter\r\n", TARGET_VERSION);
     printf("%s %s %s\r\n", TARGET_COMPILER, __VERSION__, __DATE__);
     printf("sys_clk: %d\r\n", SystemCoreClock);
@@ -165,6 +165,7 @@ void SYS_INIT() {
 void SYS_SLP() {
     EXTI_ClearITPendingBit(EXTI_Line14);
     EXTI_ClearITPendingBit(EXTI_Line15);
+    NVIC_DisableIRQ(EXTI7_0_IRQn);
     NVIC_EnableIRQ(EXTI15_8_IRQn);
     printf("Enter SLP Mode\r\n");
 #ifndef TARGET_DEBUG
@@ -172,6 +173,8 @@ void SYS_SLP() {
 #else
     __WFI();
 #endif
+    EXTI_ClearITPendingBit(EXTI_Line0);
+    NVIC_EnableIRQ(EXTI7_0_IRQn);
     return;
 }
 
@@ -283,6 +286,29 @@ void EXTI_INIT() {
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
+
+    NVIC_InitTypeDef NVIC_InitStructure = {0};
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI15_8_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_Init(&NVIC_InitStructure);
+    return;
+}
+
+void EXTI15_8_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void EXTI15_8_IRQHandler() {
+    if(EXTI_GetITStatus(EXTI_Line14) != RESET) {
+        SystemInit();
+        printf("Exit SLP Mode\r\n");
+        EXTI_ClearITPendingBit(EXTI_Line14);
+        NVIC_DisableIRQ(EXTI15_8_IRQn);
+    }
+    if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
+        SystemInit();
+        printf("Exit SLP Mode\r\n");
+        EXTI_ClearITPendingBit(EXTI_Line15);
+        NVIC_DisableIRQ(EXTI15_8_IRQn);
+    }
     return;
 }
 
@@ -377,12 +403,6 @@ static inline void WS2812_1() {
     return;
 }
 
-static inline void WS2812_Reset() {
-    GPIOA->BCR = GPIO_Pin_0;
-    Delay_Us(300);
-    return;
-}
-
 #define GREEN   0x070000
 #define RED     0x000700
 #define BLUE    0x000007
@@ -391,13 +411,46 @@ static inline void WS2812_Reset() {
 #define MAGENTA 0x000707
 
 void WS2812_SetColor(int32_t grb) {
+    __disable_irq();
     grb <<= 8;
     for(int i = 0; i < 24; i++) {
         if(grb < 0) WS2812_1();
         else WS2812_0();
         grb <<= 1;
     }
-    WS2812_Reset();
+    GPIOA->BCR = GPIO_Pin_0;
+    __enable_irq();
+    Delay_Us(300);
+    return;
+}
+
+void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void EXTI7_0_IRQHandler() {
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET) {
+        uint32_t sys;
+        IIC_ReadReg(0x0508, &sys, 4);
+        printf("mpd_sys: 0x%08x\r\n", sys);
+        EXTI_ClearITPendingBit(EXTI_Line0);
+    }
+    return;
+}
+
+void MPD_IRQInit() {
+    EXTI_InitTypeDef EXTI_InitStructure = {0};
+    /* GPIOB.0 ----> EXTI_Line0 */
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
+
+    NVIC_InitTypeDef NVIC_InitStructure = {0};
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 7;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
     return;
 }
 
@@ -406,7 +459,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     printf("Reset MPD\r\n");
     GPIO_IN_INIT(GPIOB, GPIO_Pin_0);    //MCU_DP_INT
     GPIO_OUT_INIT(GPIOB, GPIO_Pin_1, Bit_RESET);    //MCU_DP_RST#
-    Delay_Us(2);    //tRSTON
+    Delay_Us(20);    //tRSTON
     GPIO_WriteBit(GPIOB, GPIO_Pin_1, Bit_SET);
     uint32_t id = 0;
     IIC_ReadReg(0x0500, &id, 2);
@@ -414,10 +467,12 @@ void MPD_Init(){ //Mobile Peripheral Devices
     uint32_t pin = 0;
     IIC_ReadReg(0x0508, &pin, 1);
     printf("mpd_pin: 0x%02x\r\n", pin);
+    printf("Enable MPD IRQ\r\n");
+    MPD_IRQInit();
 
     //1.2v SW, 0.0dB
-    IIC_WriteRegI(0x06a0, 0x033085);    //Set DP mode
-    IIC_WriteRegI(0x07a0, 0x033000);    //Set DP mode
+    IIC_WriteRegI(0x06a0, 0x123087);    //Set DP mode
+    IIC_WriteRegI(0x07a0, 0x123002);    //Set DP mode
     IIC_WriteRegI(0x0918, 0x0201);      //Set SYSPLL
     IIC_WriteRegI(0x0800, 0x03000007);  //Init DP PHY
     printf("Enable MPD PLL\r\n");
@@ -425,7 +480,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     Delay_Us(500);
     IIC_WriteRegI(0x0904, 0x05);    //Enable DP1 PLL
     Delay_Us(500);
-    IIC_WriteRegI(0x0914, 0x320445);    //Set PXLPLL
+    IIC_WriteRegI(0x0914, 0x320244);    //Set PXLPLL
     IIC_WriteRegI(0x0908, 0x05);    //Enable SYSPLL
     Delay_Us(500);
     printf("Enable MPD Func\r\n");
@@ -470,21 +525,18 @@ int MPD_CfgLink(){
     //IIC_WriteRegI(0x0664, 0x00010732);  //Set DP AUX Feature
     uint32_t cap = MPD_ReadAuxI(4, 0x00000);
     printf("dp_sink_cap: 0x%08x\r\n", cap);
-    if(!cap) {
-        printf("DP AUX Timeout\r\n");
-        return -1;
-    }
-    MPD_WriteAUXI(2, 0x00100, 0x0206);  //DP Link Rate and Link Count
+
+    MPD_WriteAUXI(2, 0x00100, 0x820A);  //DP Link Rate and Link Count
     MPD_WriteAUXI(1, 0x00108, 0x01);    //DP Link Coding
 
     printf("Start Link Training\r\n");
     uint32_t code, status, result;
-    MPD_WriteAUXI(2, 0x00103, 0x0303);  //DP PHY Signal
+    MPD_WriteAUXI(2, 0x00103, 0x0202);  //DP PHY Signal
     IIC_WriteRegI(0x06E4, 0x21);        //DP0_SnkLTCtrl, AUX 00102h
     IIC_WriteRegI(0x06D8, 0xF500002A);  //DP0_LTLoopCtrl, Set Training properties
-    IIC_WriteRegI(0x06A0, 0x00033084);
-    IIC_WriteRegI(0x06A0, 0x00033185);  //DP0_SrcCtrl, Enable Training
-    IIC_WriteRegI(0x0600, 0x01);        //DP0Ctl, Enable Output
+    IIC_WriteRegI(0x06A0, 0x00023086);
+    IIC_WriteRegI(0x06A0, 0x00023187);  //DP0_SrcCtrl, Enable Training
+    IIC_WriteRegI(0x0600, 0x21);        //DP0Ctl, Enable Output
     do {
         Delay_Ms(1);
         IIC_ReadReg(0x06D0, &result, 4);
@@ -496,9 +548,9 @@ int MPD_CfgLink(){
     printf("status: 0x%02x\r\n", status);
 
     IIC_WriteRegI(0x06E4, 0x22);
-    MPD_WriteAUXI(2, 0x00103, 0x0303);
-    IIC_WriteRegI(0x06A0, 0x00033084);
-    IIC_WriteRegI(0x06A0, 0x00033285);
+    MPD_WriteAUXI(2, 0x00103, 0x0A0A);
+    IIC_WriteRegI(0x06A0, 0x00123086);
+    IIC_WriteRegI(0x06A0, 0x00123287);
     do {
         Delay_Ms(1);
         IIC_ReadReg(0x06D0, &result, 4);
@@ -509,16 +561,20 @@ int MPD_CfgLink(){
     printf("code: 0x%02x\r\n", code);
     printf("status: 0x%02x\r\n", status);
 
-    IIC_WriteRegI(0x06A0, 0x00033085);  //Clean LT Pattern
-    MPD_WriteAUXI(1, 0x00102, 0x20);    //Clean DPCD LT Pattern
+    IIC_WriteRegI(0x06A0, 0x00121087);  //Clean LT Pattern
+    MPD_WriteAUXI(1, 0x00102, 0x00);    //Clean DPCD LT Pattern
 
     uint32_t result2[2] = {0, 0};
     MPD_ReadAux(7, 0x00200, result2);
     printf("Sink LT Status:\r\n");
     printf("code0: 0x%08x\r\n", result2[0]);
     printf("code1: 0x%08x\r\n", result2[1]);
+    uint32_t symbol;
+    MPD_ReadAux(4, 0x00210, &symbol);
+    printf("symbol_err: 0x%08x\r\n", symbol);
     
-    MPD_WriteAUXI(1, 0x0010A, 0x00);    //Set No-ASSR and Enhanced Framing
+    MPD_WriteAUXI(1, 0x0010A, 0x02);    //Set No-ASSR and Enhanced Framing
+    MPD_WriteAUXI(1, 0x00107, 0x00);    //Set SSCG
     return 0;
 }
 
@@ -570,7 +626,7 @@ void MPD_Test_EDID(uint32_t data[64]){
 
 void MPD_CfgVideo(){
     uint32_t pm = MPD_ReadAuxI(1, 0x00600);
-    printf("pm: %02x\r\n", pm);
+    printf("dp_sink_pm: %02x\r\n", pm);
     uint32_t cap = MPD_ReadAuxI(2, 0x00005);
     printf("dp_sink_type: 0x%04x\r\n", cap);
 
@@ -578,7 +634,6 @@ void MPD_CfgVideo(){
     if(!MPD_ReadEDID(edid, 256)) {
         MPD_Test_EDID(edid);
     }
-
     //1920x1080p @30fps
     //Video Input Parameter
     IIC_WriteRegI(0x0450, 0x05800100);  //VPCTRL0
@@ -598,27 +653,23 @@ void MPD_CfgVideo(){
 void MPD_CfgTest(){
     printf("Enable Test Color Checker Output\r\n");
     IIC_WriteRegI(0x0A00, 0xFFFFFF13);  //TSTCTL
-    IIC_WriteRegI(0x0610, 0x00003B91);  //DP0_VidMNGen0, Auto
-    IIC_WriteRegI(0x0614, 0x00008118);  //DP0_VidMNGen1, Auto
-    IIC_WriteRegI(0x0600, 0x41);
-    IIC_WriteRegI(0x0600, 0x43);    //DP0Ctl Output Enable
+    IIC_WriteRegI(0x0610, 0x0000473F);  //DP0_VidMNGen0, Auto
+    IIC_WriteRegI(0x0614, 0x000080AC);  //DP0_VidMNGen1, Auto
+    IIC_WriteRegI(0x0560, (1 << 16));   //Enable MPD SYS Interrupt
     IIC_WriteRegI(0x0510, 0x0103);  //SYSCTRL, Set DP Video Source
-
-    Delay_Ms(2);
-    uint32_t sys, irq;
-    IIC_ReadReg(0x0508, &sys, 4);
-    IIC_ReadReg(0x0220, &irq, 4);
-    printf("mpd_sys: 0x%08x\r\n", sys);
-    printf("mpd_irq: 0x%08x\r\n", irq);
-    return;
-}
-
-void MPD_CfgScreen(){
-    uint32_t result2[2] = {0, 0};
-    MPD_ReadAux(7, 0x00200, result2);
-    printf("Sink LT Status:\r\n");
-    printf("code0: 0x%08x\r\n", result2[0]);
-    printf("code1: 0x%08x\r\n", result2[1]);
+    Delay_Ms(1);
+    IIC_WriteRegI(0x0600, 0x61);
+    IIC_WriteRegI(0x0600, 0x63);    //DP0Ctl Output Enable
+    
+    Delay_Ms(500);
+    uint32_t result[2] = {0, 0};
+    MPD_ReadAux(7, 0x00200, result);
+    printf("Sink Normal Status:\r\n");
+    printf("code0: 0x%08x\r\n", result[0]);
+    printf("code1: 0x%08x\r\n", result[1]);
+    uint32_t symbol;
+    MPD_ReadAux(4, 0x00210, &symbol);
+    printf("symbol_err: 0x%08x\r\n", symbol);
     return;
 }
 
@@ -637,8 +688,8 @@ void GPIO_Toggle_VCONN(int state){
 }
 
 void GPIO_Toggle_DPSEL(int state){
-    int sel = state ^ ((USBPD->CONFIG & CC_SEL) ? Bit_RESET : Bit_SET);
-    printf("Toggle DP MUX %s\r\n", sel ? "Normal" : "Flip");
+    int sel = state ^ ((USBPD->CONFIG & CC_SEL) > 0);
+    printf("Toggle DP MUX %s\r\n", sel ? "Flip" : "Normal");
     GPIO_WriteBit(GPIOA, GPIO_Pin_3, sel); //TYPEC_SEL#
     return;
 }
@@ -887,6 +938,11 @@ void PD_INIT(pd_state_t* PD_Ctl) {
     USBPD->CONFIG = PD_DMA_EN;
     USBPD->STATUS = BUF_ERR | IF_RX_BIT | IF_RX_BYTE | IF_RX_ACT | IF_RX_RESET | IF_TX_END;
 
+    NVIC_InitTypeDef NVIC_InitStructure = {0};
+    NVIC_InitStructure.NVIC_IRQChannel = USBPD_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_Init(&NVIC_InitStructure);
     USBPD_FSM = PD_Ctl;
     PD_FSM_Reset(PD_Ctl);
 
@@ -1000,7 +1056,7 @@ void PD_Load_VDM_DP_CFG(void* buf, struct PD_FSM* PD_Ctl) {
     uint32_t data = 0x2 | (0x1 << 2); //Set UFP_U as UFP_D and Enable DP1.3 Signaling
     //int pin = PD_Ctl->DP_Status.Receptable ? PD_Ctl->DP_Status.UFP_Pin : PD_Ctl->DP_Status.DFP_Pin;
     //TODO
-    GPIO_Toggle_DPSEL(0);
+    GPIO_Toggle_DPSEL(FLIP_SEL);
     data |= 0x4 << 8;
     ((uint32_t*)buf)[1] = data;
     return;

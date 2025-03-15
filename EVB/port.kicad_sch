@@ -7771,7 +7771,7 @@
 		)
 		(uuid "bd659ab0-f92d-4ccc-be75-ce07bc8c4374")
 	)
-	(text "L: Flip; H: Normal"
+	(text "L: Normal; H: Flip"
 		(exclude_from_sim no)
 		(at 103.886 97.028 0)
 		(effects
@@ -7900,16 +7900,6 @@
 			(justify left bottom)
 		)
 		(uuid "3195c0d2-42a6-4d97-9548-0d0d1120293e")
-	)
-	(label "DP_S_AUX_P"
-		(at 142.24 107.95 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "458dfea2-347e-406e-8718-93a043d53a80")
 	)
 	(label "MCU_VSENSE"
 		(at 209.55 50.8 0)
@@ -8061,6 +8051,16 @@
 		)
 		(uuid "72dc76bf-3776-45d1-8760-ed75bd97c8bd")
 	)
+	(label "DP_S_AUX_N"
+		(at 142.24 107.95 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "74467c9f-205d-423a-8871-085a120e93bd")
+	)
 	(label "DP_S_ML1_N"
 		(at 144.78 38.1 0)
 		(effects
@@ -8121,16 +8121,6 @@
 		)
 		(uuid "8dfdb093-65e4-4fc2-94c8-81727022d2f4")
 	)
-	(label "DP_S_AUX_N"
-		(at 142.24 102.87 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "945bf645-35bf-4701-a638-710110971c32")
-	)
 	(label "TYPEC_AUX_P"
 		(at 54.61 83.82 0)
 		(effects
@@ -8160,6 +8150,16 @@
 			(justify left bottom)
 		)
 		(uuid "a4077057-5fa2-490d-bcfb-bded75ba4cac")
+	)
+	(label "DP_S_AUX_P"
+		(at 142.24 102.87 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a5904393-f883-4d41-b4de-19cedaf80561")
 	)
 	(label "TYPEC_VEN#"
 		(at 209.55 35.56 0)
@@ -8221,16 +8221,6 @@
 		)
 		(uuid "b8045391-f3a6-4837-8a98-4cc3d137f17d")
 	)
-	(label "DP_S_AUX_N"
-		(at 142.24 105.41 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "bb71dd1b-1ab1-4910-9fa9-6c1090bfdea9")
-	)
 	(label "TYPEC_ML3_N"
 		(at 54.61 53.34 0)
 		(effects
@@ -8290,6 +8280,16 @@
 			(justify left bottom)
 		)
 		(uuid "d272d8bd-29f1-4e4e-a366-0e083c04ffa5")
+	)
+	(label "DP_S_AUX_P"
+		(at 142.24 105.41 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d3291d65-bddb-4d2c-9d82-08f542de3990")
 	)
 	(label "TYPEC_EN#"
 		(at 99.06 110.49 0)
@@ -8381,6 +8381,16 @@
 		)
 		(uuid "e52b363b-47b2-46eb-a7ba-58c33336b971")
 	)
+	(label "DP_S_AUX_N"
+		(at 142.24 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e5bd6174-2c07-43c4-8170-65c55d4ac3b9")
+	)
 	(label "TYPEC_VCONN1"
 		(at 209.55 81.28 0)
 		(effects
@@ -8411,16 +8421,6 @@
 		)
 		(uuid "f28a3d06-c96a-4a13-bd1e-17e2f7923d49")
 	)
-	(label "DP_S_AUX_P"
-		(at 142.24 100.33 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "fc44c794-8b80-45f3-9a97-a81d04f270ce")
-	)
 	(hierarchical_label "DP_ML0_N"
 		(shape input)
 		(at 186.69 50.8 0)
@@ -8442,17 +8442,6 @@
 			(justify left)
 		)
 		(uuid "25904ec1-46bb-484f-a6ca-dab997fabb5c")
-	)
-	(hierarchical_label "DP_AUX_P"
-		(shape input)
-		(at 184.15 100.33 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "41417b60-6b45-4b09-afab-3f19a4224d5b")
 	)
 	(hierarchical_label "DP_ML0_P"
 		(shape input)
@@ -8498,6 +8487,17 @@
 		)
 		(uuid "96df252e-fe66-4ecc-b3fe-fb14b4f05222")
 	)
+	(hierarchical_label "DP_AUX_P"
+		(shape input)
+		(at 184.15 102.87 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9e72cf6c-df46-4ade-8fad-45c95d9da3f5")
+	)
 	(hierarchical_label "DP_I2C_SCL"
 		(shape bidirectional)
 		(at 43.18 119.38 180)
@@ -8511,14 +8511,14 @@
 	)
 	(hierarchical_label "DP_AUX_N"
 		(shape input)
-		(at 184.15 102.87 0)
+		(at 184.15 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "c5910595-8c30-49a1-947d-e7cc4981d7e1")
+		(uuid "dbcb731d-53c2-465e-a378-f9b577864eb8")
 	)
 	(hierarchical_label "DP_I2C_SDA"
 		(shape bidirectional)
@@ -8865,73 +8865,6 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "C35")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 173.99 107.95 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "0fc53ecf-c3d3-4a5c-8881-85deff53ca97")
-		(property "Reference" "#PWR019"
-			(at 180.34 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 177.8 107.9499 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 173.99 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 173.99 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 173.99 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "51d929bc-f28b-43a0-8a13-c824e03dd5b6")
-		)
-		(instances
-			(project "pdaltmode"
-				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
-					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -9985,73 +9918,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R_Small")
-		(at 163.83 105.41 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "3e9a4e75-adb2-4311-b863-9c380ca8bbdc")
-		(property "Reference" "R7"
-			(at 160.528 104.394 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "100kΩ"
-			(at 168.91 104.394 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 163.83 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 163.83 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor, small symbol"
-			(at 163.83 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ba91d0e0-99be-4343-a643-ffd83d2ca253")
-		)
-		(pin "2"
-			(uuid "a22adcbe-3d4b-481e-8cb5-9e6d37c32f1f")
-		)
-		(instances
-			(project "pdaltmode"
-				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
-					(reference "R7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 166.37 48.26 90)
 		(unit 1)
@@ -10113,6 +9979,73 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 163.83 107.95 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "43ac8529-7405-443a-9028-312f49ea85ec")
+		(property "Reference" "R7"
+			(at 160.528 106.934 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100kΩ"
+			(at 168.91 106.934 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 163.83 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 163.83 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small symbol"
+			(at 163.83 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4bbcd69b-6e0f-43e8-a564-0c22600cf135")
+		)
+		(pin "2"
+			(uuid "48d40c97-48f2-4ecd-95cf-65700a0da530")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
+					(reference "R7")
 					(unit 1)
 				)
 			)
@@ -10312,6 +10245,73 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "#PWR027")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 173.99 105.41 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "47c8af2b-151c-451f-81e9-843d4ea4679b")
+		(property "Reference" "#PWR019"
+			(at 180.34 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 177.8 105.4099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 173.99 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 173.99 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 173.99 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e5462cbb-54bf-40ea-9e3c-5a631737eccc")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -11512,6 +11512,140 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C_Small")
+		(at 163.83 100.33 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6b3b8174-73f2-4de5-b0f0-058483dd94a1")
+		(property "Reference" "C17"
+			(at 160.528 99.314 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 168.402 99.314 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0201_0603Metric"
+			(at 163.83 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 163.83 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 163.83 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "bbfb01e6-3484-41b1-ac9d-8df36b840648")
+		)
+		(pin "1"
+			(uuid "55c40b58-7f14-4dcf-adf5-518d887ab8e0")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
+					(reference "C17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 173.99 102.87 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "75c792d3-ca42-493e-8a9a-b818066672ca")
+		(property "Reference" "C13"
+			(at 170.688 101.854 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 178.562 101.854 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0201_0603Metric"
+			(at 173.99 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 173.99 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 173.99 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "e7584961-33eb-4c1d-9df2-1ba961bbf01e")
+		)
+		(pin "1"
+			(uuid "3f6cd03c-424b-4817-aa61-a182af6930ce")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
+					(reference "C13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "EasyEDA_Lib:XL-1615RGBC-WS2812B-S")
 		(at 232.41 125.73 0)
 		(unit 1)
@@ -11891,6 +12025,73 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "C15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 173.99 107.95 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "86e41e39-56a0-4186-b7b3-612eade5e8fb")
+		(property "Reference" "#PWR020"
+			(at 170.18 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 177.8 107.9499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 173.99 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 173.99 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 173.99 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ca2220fa-ae7d-447e-8108-7e661771bdf7")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -12286,73 +12487,6 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "C6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 173.99 105.41 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "93121ef2-290d-4f5d-8fc0-a48c80af3790")
-		(property "Reference" "#PWR020"
-			(at 170.18 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 177.8 105.4099 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 173.99 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 173.99 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 173.99 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "3de8d5ca-8aa2-4ac4-95f9-8abb5f87050f")
-		)
-		(instances
-			(project "pdaltmode"
-				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
-					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -12855,6 +12989,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R_Small")
+		(at 163.83 105.41 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a928c447-6682-41c6-b6f4-5763103bf1c1")
+		(property "Reference" "R8"
+			(at 160.528 104.394 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100kΩ"
+			(at 168.91 104.394 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 163.83 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 163.83 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small symbol"
+			(at 163.83 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ada912d1-af57-4733-a48b-89c1cc9b88cd")
+		)
+		(pin "2"
+			(uuid "572222f5-b5f9-4f7f-b4b1-8d5249c81d5a")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
+					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C_Small")
 		(at 186.69 81.28 0)
 		(unit 1)
@@ -13121,140 +13322,6 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "C14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R_Small")
-		(at 163.83 107.95 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "aead40a8-4132-4bda-8e96-bf8c0dd00331")
-		(property "Reference" "R8"
-			(at 160.528 106.934 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "100kΩ"
-			(at 168.91 106.934 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 163.83 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 163.83 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor, small symbol"
-			(at 163.83 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "76c5a6f4-cd3a-43aa-b89e-7d65d494c7a9")
-		)
-		(pin "2"
-			(uuid "8d259d2c-c139-4eae-b4ad-30dac85ea24e")
-		)
-		(instances
-			(project "pdaltmode"
-				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
-					(reference "R8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C_Small")
-		(at 173.99 102.87 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b21789d9-1ecc-4dc0-921f-24c067541380")
-		(property "Reference" "C17"
-			(at 170.688 101.854 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "0.1uF"
-			(at 178.562 101.854 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0201_0603Metric"
-			(at 173.99 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 173.99 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor, small symbol"
-			(at 173.99 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "2311f434-31b3-4e12-b36a-cbdde0f275e4")
-		)
-		(pin "1"
-			(uuid "e24a29b6-e515-4218-84d8-2977478118cf")
-		)
-		(instances
-			(project "pdaltmode"
-				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
-					(reference "C17")
 					(unit 1)
 				)
 			)
@@ -14901,73 +14968,6 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
 					(reference "J1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C_Small")
-		(at 163.83 100.33 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "fdb8b1f7-dafe-451b-bb7a-112337af0b50")
-		(property "Reference" "C13"
-			(at 160.528 99.314 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "0.1uF"
-			(at 168.402 99.314 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0201_0603Metric"
-			(at 163.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 163.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor, small symbol"
-			(at 163.83 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "cc96a1b0-ccf8-48a9-a502-6fe1fc2f7727")
-		)
-		(pin "1"
-			(uuid "82ddf7cc-79ad-4744-985a-cc30e3ffb35c")
-		)
-		(instances
-			(project "pdaltmode"
-				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/e66ea4cb-91f3-4ff6-bd3b-b8505c2ac011"
-					(reference "C13")
 					(unit 1)
 				)
 			)

@@ -55,20 +55,3 @@ void HardFault_Handler() {
     while(1) __WFI();
     return;
 }
-
-void EXTI15_8_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void EXTI15_8_IRQHandler() {
-    if(EXTI_GetITStatus(EXTI_Line14) != RESET) {
-        SystemInit();
-        printf("Exit SLP Mode\r\n");
-        EXTI_ClearITPendingBit(EXTI_Line14);
-        NVIC_DisableIRQ(EXTI15_8_IRQn);
-    }
-    if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
-        SystemInit();
-        printf("Exit SLP Mode\r\n");
-        EXTI_ClearITPendingBit(EXTI_Line15);
-        NVIC_DisableIRQ(EXTI15_8_IRQn);
-    }
-    return;
-}

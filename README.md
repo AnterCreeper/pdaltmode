@@ -14,6 +14,7 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 ### TODO
 
 1. Active Cable Support (However I have no such one. lol)
+2. Pin Assignment Decision
 
 ### Overview
 

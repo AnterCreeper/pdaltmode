@@ -786,9 +786,9 @@
 		)
 		(uuid "4e4eff1b-99e0-406c-a16f-500241e23172")
 	)
-	(text "Change R9,R21 to 30kΩ; R20 to 180kΩ; Change USB-C footprint."
+	(text "Change R9,R21 to 30kΩ; R20 to 180kΩ; Change USB-C footprint; Fix AUX channel orientation"
 		(exclude_from_sim no)
-		(at 128.778 54.102 0)
+		(at 158.75 54.102 0)
 		(effects
 			(font
 				(face "Courier New")
