@@ -327,7 +327,7 @@ void GPIO_PD_INIT() {
 void GPIO_IN_INIT(GPIO_TypeDef* group, uint32_t pin) {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     GPIO_InitStructure.GPIO_Pin = pin;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(group, &GPIO_InitStructure);
     return;
@@ -427,8 +427,11 @@ void WS2812_SetColor(int32_t grb) {
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler() {
     if(EXTI_GetITStatus(EXTI_Line0) != RESET) {
-        uint32_t sys;
+        uint32_t sys, irq;
+        IIC_ReadReg(0x0564, &irq, 4);
         IIC_ReadReg(0x0508, &sys, 4);
+        printf("Interrupt from MPD\r\n");
+        printf("mpd_irq: 0x%08x\r\n", irq);
         printf("mpd_sys: 0x%08x\r\n", sys);
         EXTI_ClearITPendingBit(EXTI_Line0);
     }
@@ -467,10 +470,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     uint32_t pin = 0;
     IIC_ReadReg(0x0508, &pin, 1);
     printf("mpd_pin: 0x%02x\r\n", pin);
-    printf("Enable MPD IRQ\r\n");
-    MPD_IRQInit();
 
-    //1.2v SW, 0.0dB
     IIC_WriteRegI(0x06a0, 0x123087);    //Set DP mode
     IIC_WriteRegI(0x07a0, 0x123002);    //Set DP mode
     IIC_WriteRegI(0x0918, 0x0201);      //Set SYSPLL
@@ -492,6 +492,10 @@ void MPD_Init(){ //Mobile Peripheral Devices
         IIC_ReadReg(0x0800, &result, 4);
     } while((result & (1 << 16)) == 0); //Query DP PHY Ready
     printf("MPD Ready\r\n");
+
+    printf("Enable MPD IRQ\r\n");
+    MPD_IRQInit();
+    IIC_WriteRegI(0x0560, (1 << 16));   //Enable MPD SYS Interrupt
     return;
 }
 
@@ -540,7 +544,7 @@ int MPD_CfgLink(){
     do {
         Delay_Ms(1);
         IIC_ReadReg(0x06D0, &result, 4);
-    } while((result & (1 << 13)) == 0); //Query DP0_LTStat Link Training Status
+    } while((result & (1 << 13)) == 0); //Query DP0_LTStat Round Finish
     code = GETBITS(result, 8, 12);
     status = GETBITS(result, 0, 6);
     printf("Pattern 1:\r\n");
@@ -626,7 +630,7 @@ void MPD_Test_EDID(uint32_t data[64]){
 
 void MPD_CfgVideo(){
     uint32_t pm = MPD_ReadAuxI(1, 0x00600);
-    printf("dp_sink_pm: %02x\r\n", pm);
+    printf("dp_sink_pm: 0x%02x\r\n", pm);
     uint32_t cap = MPD_ReadAuxI(2, 0x00005);
     printf("dp_sink_type: 0x%04x\r\n", cap);
 
@@ -653,9 +657,8 @@ void MPD_CfgVideo(){
 void MPD_CfgTest(){
     printf("Enable Test Color Checker Output\r\n");
     IIC_WriteRegI(0x0A00, 0xFFFFFF13);  //TSTCTL
-    IIC_WriteRegI(0x0610, 0x0000473F);  //DP0_VidMNGen0, Auto
-    IIC_WriteRegI(0x0614, 0x000080AC);  //DP0_VidMNGen1, Auto
-    IIC_WriteRegI(0x0560, (1 << 16));   //Enable MPD SYS Interrupt
+    IIC_WriteRegI(0x0610, 0x000045ED);  //DP0_VidMNGen0, Auto
+    IIC_WriteRegI(0x0614, 0x00008025);  //DP0_VidMNGen1, Auto
     IIC_WriteRegI(0x0510, 0x0103);  //SYSCTRL, Set DP Video Source
     Delay_Ms(1);
     IIC_WriteRegI(0x0600, 0x61);

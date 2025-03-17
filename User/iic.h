@@ -13,7 +13,7 @@
 #define IIC_PIN_SCL     6
 #endif
 
-#define IIC_INVERVAL    3
+#define IIC_INVERVAL    18
 
 #define IIC_SDA_H()     GPIO_SetBits(IIC_PORT, 1 << IIC_PIN_SDA)
 #define IIC_SDA_L()     GPIO_ResetBits(IIC_PORT, 1 << IIC_PIN_SDA)

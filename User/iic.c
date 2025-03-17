@@ -100,8 +100,8 @@ int IIC_WaitAck() {
     Delay_Cyc(IIC_INVERVAL);
     int value = I2C_SDA_READ(); //H: NACK; L: ACK;
     IIC_SCL_L();
-    Delay_Cyc(IIC_INVERVAL);
     IIC_SDA_H();
+    Delay_Cyc(IIC_INVERVAL);
     return -value;
 }
 
