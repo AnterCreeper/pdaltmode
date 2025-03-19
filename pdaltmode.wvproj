@@ -84,8 +84,8 @@
 					"pedantic_warnings_as_errors": false,
 					"inhibit_all_warnings": false,
 					"warn_on_various_unused_elements": true,
-					"warn_on_uninitialized_variables": true,
-					"enable_all_common_warnings": false,
+					"warn_on_uninitialized_variables": false,
+					"enable_all_common_warnings": true,
 					"enable_extra_warnings": false,
 					"warn_on_undeclared_global_function": false,
 					"warn_on_implicit_conversions": false,
@@ -96,7 +96,7 @@
 					"warn_if_struct_is_returned": false,
 					"warn_if_floats_are_compared_as_equal": false,
 					"generate_errors_instead_of_warnings": true,
-					"other_warning_flags": ""
+					"other_warning_flags": "-Wno-format"
 				},
 				"debugging": {
 					"debug_level": "default",

@@ -12,72 +12,8 @@
 *******************************************************************************/
 #include "debug.h"
 
-static uint8_t  p_us = 0;
-static uint16_t p_ms = 0;
-
 #define DEBUG_DATA0_ADDRESS  ((volatile uint32_t*)0xE0000380)
 #define DEBUG_DATA1_ADDRESS  ((volatile uint32_t*)0xE0000384)
-
-/*********************************************************************
- * @fn      Delay_Init
- *
- * @brief   Initializes Delay Funcation.
- *
- * @return  none
- */
-void Delay_Init(void)
-{
-    p_us = SystemCoreClock / 8000000;
-    p_ms = (uint16_t)p_us * 1000;
-}
-
-/*********************************************************************
- * @fn      Delay_Us
- *
- * @brief   Microsecond Delay Time.
- *
- * @param   n - Microsecond number.
- *
- * @return  None
- */
-void Delay_Us(uint32_t n)
-{
-    uint32_t i;
-
-    SysTick->SR &= ~(1 << 0);
-    i = (uint32_t)n * p_us;
-
-    SysTick->CMP = i;
-    SysTick->CTLR |= (1 << 4);
-    SysTick->CTLR |= (1 << 5) | (1 << 0);
-
-    while((SysTick->SR & (1 << 0)) != (1 << 0));
-    SysTick->CTLR &= ~(1 << 0);
-}
-
-/*********************************************************************
- * @fn      Delay_Ms
- *
- * @brief   Millisecond Delay Time.
- *
- * @param   n - Millisecond number.
- *
- * @return  None
- */
-void Delay_Ms(uint32_t n)
-{
-    uint32_t i;
-
-    SysTick->SR &= ~(1 << 0);
-    i = (uint32_t)n * p_ms;
-
-    SysTick->CMP = i;
-    SysTick->CTLR |= (1 << 4);
-    SysTick->CTLR |= (1 << 5) | (1 << 0);
-
-    while((SysTick->SR & (1 << 0)) != (1 << 0));
-    SysTick->CTLR &= ~(1 << 0);
-}
 
 /*********************************************************************
  * @fn      USART_Printf_Init
@@ -120,7 +56,6 @@ void USART_Printf_Init(uint32_t baudrate)
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 #endif
-
     USART_InitStructure.USART_BaudRate = baudrate;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -173,45 +108,23 @@ __attribute__((used))
 int _write(int fd, char *buf, int size)
 {
     int i = 0;
-
 #if (SDI_PRINT == SDI_PR_OPEN)
     int writeSize = size;
-
-    do
-    {
-
-        /**
-         * data0  data1 共8个字节
-         * data0最低位的字节存放长度，最大为 7
-         *
-         */
-
-        while( (*(DEBUG_DATA0_ADDRESS) != 0u))
-        {
-
-        }
-
-        if(writeSize>7)
-        {
+    do {
+        while((*(DEBUG_DATA0_ADDRESS) != 0u));
+        if(writeSize > 7) {
             *(DEBUG_DATA1_ADDRESS) = (*(buf+i+3)) | (*(buf+i+4)<<8) | (*(buf+i+5)<<16) | (*(buf+i+6)<<24);
             *(DEBUG_DATA0_ADDRESS) = (7u) | (*(buf+i)<<8) | (*(buf+i+1)<<16) | (*(buf+i+2)<<24);
-
             i += 7;
             writeSize -= 7;
-        }
-        else
-        {
+        } else {
             *(DEBUG_DATA1_ADDRESS) = (*(buf+i+3)) | (*(buf+i+4)<<8) | (*(buf+i+5)<<16) | (*(buf+i+6)<<24);
             *(DEBUG_DATA0_ADDRESS) = (writeSize) | (*(buf+i)<<8) | (*(buf+i+1)<<16) | (*(buf+i+2)<<24);
-
             writeSize = 0;
         }
-
     } while (writeSize);
-
-
 #else
-    for(i = 0; i < size; i++){
+    for(i = 0; i < size; i++) {
 #if(DEBUG == DEBUG_UART1)
         while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
         USART_SendData(USART1, *buf++);

@@ -55,13 +55,26 @@ main-build: pdaltmode.elf secondary-outputs
 
 # Tool invocations
 pdaltmode.elf: $(OBJS) $(USER_OBJS)
-	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wuninitialized -g -T "/home/lenovo/mounriver-studio-projects/pdaltmode/Ld/Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"pdaltmode.map" --specs=nosys.specs -o "pdaltmode.elf" $(OBJS) $(USER_OBJS) $(LIBS) -lprintf
+	@echo 'Building target: $@'
+	@echo 'Invoking: GNU RISC-V Cross C Linker'
+	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -T "/home/lenovo/mounriver-studio-projects/pdaltmode/Ld/Link.ld" -nostartfiles -Xlinker --gc-sections -Xlinker --print-memory-usage -Wl,-Map,"pdaltmode.map" --specs=nosys.specs -o "pdaltmode.elf" $(OBJS) $(USER_OBJS) $(LIBS) -lprintf
+	@echo 'Finished building target: $@'
+	@
 pdaltmode.hex: pdaltmode.elf
+	@echo 'Invoking: GNU RISC-V Cross Create Flash Image'
 	@	riscv-wch-elf-objcopy -O ihex "pdaltmode.elf" "pdaltmode.hex"
+	@echo 'Finished building $@'
+	@
 pdaltmode.lst: pdaltmode.elf
+	@echo 'Invoking: GNU RISC-V Cross Create Listing'
 	@	riscv-wch-elf-objdump --all-headers --demangle --disassemble -M xw "pdaltmode.elf" > "pdaltmode.lst"
+	@echo 'Finished building $@'
+	@
 pdaltmode.siz: pdaltmode.elf
+	@echo 'Invoking: GNU RISC-V Cross Print Size'
 	riscv-wch-elf-size --format=berkeley "pdaltmode.elf"
+	@echo 'Finished building $@'
+	@
 
 # Other Targets
 clean:

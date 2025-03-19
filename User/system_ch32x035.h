@@ -13,20 +13,36 @@
 #define __SYSTEM_CH32X035_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif 
 
-extern uint32_t SystemCoreClock;          /* System Clock Frequency (Core Clock) */
+/* 
+* Uncomment the line corresponding to the desired System clock (SYSCLK) frequency (after 
+* reset the HSI is used as SYSCLK source).
+*/
+//#define SYSCLK_FREQ_8MHz_HSI   8000000
+//#define SYSCLK_FREQ_12MHz_HSI  12000000
+//#define SYSCLK_FREQ_16MHz_HSI  16000000
+#define SYSCLK_FREQ_24MHz_HSI  24000000
+//#define SYSCLK_FREQ_48MHz_HSI  HSI_VALUE
+
+#ifdef SYSCLK_FREQ_8MHz_HSI
+#define SystemCoreClock SYSCLK_FREQ_8MHz_HSI
+#elif defined SYSCLK_FREQ_12MHz_HSI
+#define SystemCoreClock SYSCLK_FREQ_12MHz_HSI
+#elif defined SYSCLK_FREQ_16MHz_HSI
+#define SystemCoreClock SYSCLK_FREQ_16MHz_HSI
+#elif defined SYSCLK_FREQ_24MHz_HSI
+#define SystemCoreClock SYSCLK_FREQ_24MHz_HSI
+#elif defined SYSCLK_FREQ_48MHz_HSI
+#define SystemCoreClock SYSCLK_FREQ_48MHz_HSI
+#endif
 
 /* System_Exported_Functions */  
 extern void SystemInit(void);
-extern void SystemCoreClockUpdate(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-
-

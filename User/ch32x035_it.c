@@ -9,10 +9,11 @@
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
-#include "ch32x035_it.h"
+#include "debug.h"
 
 void NMI_Handler() {
     NVIC_SystemReset();
+    __builtin_unreachable();
     return;
 }
 
@@ -53,5 +54,6 @@ void HardFault_Handler() {
     printf("sp: 0x%08x\r\n", v_sp);
 
     while(1) __WFI();
+    __builtin_unreachable();
     return;
 }
