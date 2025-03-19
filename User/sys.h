@@ -1,7 +1,7 @@
 #ifndef __SYS_H
 #define __SYS_H
 
-#include "debug.h"
+#include <sys/types.h>
 
 #define TARGET_VERSION  "0.2"
 

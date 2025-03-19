@@ -90,8 +90,7 @@ void USART_Printf_Init(uint32_t baudrate)
 void SDI_Printf_Enable(void)
 {
     *(DEBUG_DATA0_ADDRESS) = 0;
-    Delay_Init();
-    Delay_Ms(1);
+    for(int i = 0; i < 4096; i++) __asm__("");
 }
 
 /*********************************************************************

@@ -27,7 +27,7 @@ extern "C" {
 
 /* DEBUG UATR Definition */
 #ifndef DEBUG
-#define DEBUG   DEBUG_UART2 //for compatible with QFN20 CH32X035F8U6
+#define DEBUG   DEBUG_UART2
 #endif
 
 /* SDI Printf Definition */
@@ -38,9 +38,6 @@ extern "C" {
 #define SDI_PRINT   SDI_PR_CLOSE
 #endif
 
-void Delay_Init(void);
-void Delay_Us(uint32_t n);
-void Delay_Ms(uint32_t n);
 void USART_Printf_Init(uint32_t baudrate);
 void SDI_Printf_Enable(void);
 

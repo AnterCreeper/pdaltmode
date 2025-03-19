@@ -86,7 +86,6 @@ typedef enum IRQn
 
 #include <stdint.h>
 #include "core_riscv.h"
-#include "system_ch32x035.h"
 
 /* Standard Peripheral Library old definitions (maintained for legacy purpose) */
 #define HSI_Value             HSI_VALUE

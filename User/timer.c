@@ -1,5 +1,5 @@
 #include "timer.h"
-#include "system_ch32x035.h"
+#include <ch32x035_tim.h>
 
 volatile timer_t TIM1_CNT;
 timer_irq_t TIM_IRQ[TIM_IRQ_SIZE];
@@ -58,8 +58,8 @@ void Timer_INIT() {
     return;
 }
 
-void TIM_Delay(size_t us) {
-    volatile size_t t = us*(SystemCoreClock/8000000);
+void TIM_Delay(unsigned long us) {
+    volatile unsigned long t = us*(SystemCoreClock/8000000);
     while(t--) __asm__("");
     return;
 }

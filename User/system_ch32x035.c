@@ -9,7 +9,8 @@
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
-#include "ch32x035.h"
+#include <ch32x035.h>
+#include "system_ch32x035.h"
 
 /* system_private_function_proto_types */
 static void SetSysClock(void);

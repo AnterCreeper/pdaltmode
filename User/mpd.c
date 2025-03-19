@@ -1,3 +1,4 @@
+#include "timer.h"
 #include "gpio.h"
 #include "iic.h"
 #include "mpd.h"

@@ -2,7 +2,9 @@
 #define __TIMER_H
 
 #define __timer_t_defined
+#include "system_ch32x035.h"
 #include "debug.h"
+#include <sys/types.h>
 
 #define TIM_IRQ_SIZE    8
 
@@ -27,7 +29,7 @@ inline static int TIM_Timeout(timer_t timer) {
     return -(SysTick->CNT > timer);
 }
 
-void TIM_Delay(size_t us);
+void TIM_Delay(unsigned long us);
 void TIM_Wait(timer_t next_timer);
 void TIM_WaitL(timer_t next_timer);
 #define TIM_Delay_Us(x) TIM_Wait(TIM_GetTimer()+x*(SystemCoreClock/8000000))

@@ -1,6 +1,7 @@
 #include "timer.h"
 #include "sys.h"
 #include "system_ch32x035.h"
+#include "debug.h"
 
 #define GETBITS(x, n, m) ((x >> n) & ((1 << (m - n + 1)) - 1))
 

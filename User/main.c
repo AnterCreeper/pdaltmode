@@ -10,6 +10,7 @@
 #include "iic.h"
 #include "mpd.h"
 #include "usbpd.h"
+#include "debug.h"
 #include <ch32x035_opa.h>
 
 void VSNS_INIT() {

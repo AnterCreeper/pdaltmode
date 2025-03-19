@@ -1,5 +1,7 @@
 #include <ch32x035_gpio.h>
 #include "iic.h"
+#include "timer.h"
+#include <stdio.h>
 
 #define IIC_SDA_POS         ((IIC_PIN_SDA & 0x7) * 4)
 #define IIC_SDA_CFGMASK     ((-1) ^ (0xF << IIC_SDA_POS))

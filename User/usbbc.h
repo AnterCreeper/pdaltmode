@@ -3,7 +3,6 @@
 
 #include "timer.h"
 #include "gpio.h"
-#include "ch32x035_conf.h"
 
 #define UDM_BC_CMPO     (1<<19)
 #define UDP_BC_CMPO     (1<<18)

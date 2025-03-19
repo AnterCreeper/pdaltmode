@@ -1,7 +1,6 @@
 #ifndef __IIC_H
 #define __IIC_H
 
-#include "timer.h"
 #include <ch32x035_rcc.h>
 
 #define IIC_PORT        GPIOA

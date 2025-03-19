@@ -1,4 +1,5 @@
 #include "usbbc.h"
+#include "debug.h"
 
 static inline int BC_Timeout(bc_state_t* BC_Ctl, uint32_t ms) {
     timer_t next_timer = BC_Ctl->timer + ms*(SystemCoreClock/8000);
