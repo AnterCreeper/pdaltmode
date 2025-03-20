@@ -3546,7 +3546,7 @@
 		(descr "USB TYPE C, RA RCPT PCB, Hybrid, https://www.amphenolcanada.com/StockAvailabilityPrice.aspx?From=&PartNum=12401548E4%7e2A")
 		(tags "USB C Type-C Receptacle Hybrid")
 		(property "Reference" "J1"
-			(at 0 -6.36 -90)
+			(at 0 -6.36 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "a0687503-a2cf-4bd3-94d2-ebac746d0286")
@@ -3558,7 +3558,7 @@
 			)
 		)
 		(property "Value" "USB_C_Receptacle"
-			(at 0 6.14 -90)
+			(at 0 6.14 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "13795590-5b4a-4e7b-9f5b-32c02545e4e8")
@@ -3734,7 +3734,7 @@
 			(uuid "af1bebe8-7b34-4f93-a812-2b9ec6031030")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 -90)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(uuid "9926e5da-c8f7-4c36-a42e-8e5ea74a77f3")
 			(effects
@@ -4058,9 +4058,9 @@
 			(pintype "passive")
 			(uuid "f6842060-616b-4304-8a64-298e7a3f0a37")
 		)
-		(model "${KICAD8_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_Amphenol_12401548E4-2A.wrl"
+		(model "${KIPRJMOD}/Library.pretty/USB-C-SMD_TYPEC-324-BCP24.step"
 			(offset
-				(xyz 0 0 0)
+				(xyz 0 1.2 -1.25)
 			)
 			(scale
 				(xyz 1 1 1)

@@ -4,6 +4,7 @@
 /obj/pdaltmode.hex
 /obj/pdaltmode.lst
 /obj/pdaltmode.map
+/EVB/fp-lib-table
 /EVB/fp-info-cache
 /EVB/pdaltmode.kicad_prl
 /EVB/pdaltmode-backups/
