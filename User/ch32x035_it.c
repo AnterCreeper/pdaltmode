@@ -9,9 +9,7 @@
 * Attention: This software (modified or not) and binary are used for 
 * microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
-#include <stdio.h>
-#include <ch32x035.h>
-#include <core_riscv.h>
+#include "debug.h"
 
 void NMI_Handler() {
     NVIC_SystemReset();

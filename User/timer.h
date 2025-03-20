@@ -4,7 +4,6 @@
 #define __timer_t_defined
 #include "system_ch32x035.h"
 #include "debug.h"
-#include <sys/types.h>
 
 #define TIM_IRQ_SIZE    8
 

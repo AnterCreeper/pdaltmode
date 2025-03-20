@@ -2591,7 +2591,7 @@
 			(pintype "passive")
 			(uuid "3a466d33-2f10-4925-b878-53496b6fac20")
 		)
-		(model "${KIPRJMOD}/EASYEDA_MODELS/CASE-B_L3.5-W2.8-H1.9.step"
+		(model "${KIPRJMOD}/Library.pretty/CASE-B_L3.5-W2.8-H1.9.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -12801,7 +12801,7 @@
 			(pintype "passive")
 			(uuid "6239d9ba-422f-40cc-84b0-8c3f2e85dbe3")
 		)
-		(model "${KIPRJMOD}/EASYEDA_MODELS/MICRO-USB-TH_UX-150-ARG4.step"
+		(model "${KIPRJMOD}/Library.pretty/MICRO-USB-TH_UX-150-ARG4.step"
 			(offset
 				(xyz 0 -1.85 -2)
 			)
@@ -14123,7 +14123,7 @@
 			(pintype "unspecified")
 			(uuid "07a5569d-0bdc-47b9-b85e-f6da0de1a3b9")
 		)
-		(model "${KIPRJMOD}/EASYEDA_MODELS/OSC-SMD_4P-L2.5-W2.0-H0.6.step"
+		(model "${KIPRJMOD}/Library.pretty/OSC-SMD_4P-L2.5-W2.0-H0.6.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -15722,7 +15722,7 @@
 			(pintype "passive")
 			(uuid "97c1da73-a583-4dba-9a8b-225861320af9")
 		)
-		(model "${KIPRJMOD}/EASYEDA_MODELS/CASE-B_L3.5-W2.8-H1.9.step"
+		(model "${KIPRJMOD}/Library.pretty/CASE-B_L3.5-W2.8-H1.9.step"
 			(offset
 				(xyz 0 0 0)
 			)
