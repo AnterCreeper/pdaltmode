@@ -443,8 +443,92 @@
 	)
 	(text_box ""
 		(exclude_from_sim no)
+		(at 63.5 107.95 0)
+		(size 203.2 6.35)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "037ee987-0f40-4bf5-bf43-25e771166864")
+	)
+	(text_box ""
+		(exclude_from_sim no)
+		(at 63.5 120.65 0)
+		(size 203.2 6.35)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "0c30ab7c-2e77-492d-b4c2-ca5ce92e925e")
+	)
+	(text_box ""
+		(exclude_from_sim no)
+		(at 63.5 114.3 0)
+		(size 203.2 6.35)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "1562605e-ac1f-42b9-8502-b31bd9aff3b1")
+	)
+	(text_box ""
+		(exclude_from_sim no)
+		(at 63.5 63.5 0)
+		(size 203.2 6.35)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "2831d38c-bd24-40f9-bd6f-2eb009fdaff0")
+	)
+	(text_box ""
+		(exclude_from_sim no)
 		(at 63.5 50.8 0)
-		(size 190.5 6.35)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -460,12 +544,12 @@
 			)
 			(justify left top)
 		)
-		(uuid "1d85d45b-a95c-4bcc-a20d-d7bd7499e308")
+		(uuid "31df1d64-3f9d-4988-bd15-1bd583d4a3a4")
 	)
 	(text_box ""
 		(exclude_from_sim no)
-		(at 63.5 57.15 0)
-		(size 190.5 6.35)
+		(at 63.5 101.6 0)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -481,12 +565,12 @@
 			)
 			(justify left top)
 		)
-		(uuid "3a94eb03-1d58-49e5-88b1-e6c5aff902c1")
+		(uuid "328e7071-7fc5-4f6a-9ea4-59203a0416bc")
 	)
 	(text_box ""
 		(exclude_from_sim no)
-		(at 63.5 88.9 0)
-		(size 190.5 6.35)
+		(at 63.5 82.55 0)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -502,12 +586,12 @@
 			)
 			(justify left top)
 		)
-		(uuid "54b49311-3e35-40d9-9d88-b1241588bc9c")
+		(uuid "38a83606-2184-480d-9af9-a136914cd150")
 	)
 	(text_box ""
 		(exclude_from_sim no)
 		(at 63.5 38.1 0)
-		(size 190.5 6.35)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -527,8 +611,8 @@
 	)
 	(text_box ""
 		(exclude_from_sim no)
-		(at 63.5 95.25 0)
-		(size 190.5 6.35)
+		(at 63.5 69.85 0)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -544,12 +628,12 @@
 			)
 			(justify left top)
 		)
-		(uuid "68d6115d-f9c0-485c-86c2-2535b149c054")
+		(uuid "8db118eb-7465-4083-8c26-1f5874bf3997")
 	)
 	(text_box ""
 		(exclude_from_sim no)
-		(at 63.5 114.3 0)
-		(size 190.5 6.35)
+		(at 63.5 88.9 0)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -565,12 +649,54 @@
 			)
 			(justify left top)
 		)
-		(uuid "7a4b4e57-0440-4816-86c1-86249ec61da4")
+		(uuid "9817e339-5497-4b81-86fc-78a2e78c995b")
+	)
+	(text_box ""
+		(exclude_from_sim no)
+		(at 63.5 95.25 0)
+		(size 203.2 6.35)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "9a602c20-22af-4d66-9063-e46948fbf1bd")
+	)
+	(text_box ""
+		(exclude_from_sim no)
+		(at 63.5 57.15 0)
+		(size 203.2 6.35)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "c80e5b5f-98d3-4124-9e65-59595b29374c")
 	)
 	(text_box ""
 		(exclude_from_sim no)
 		(at 63.5 76.2 0)
-		(size 190.5 6.35)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -586,75 +712,12 @@
 			)
 			(justify left top)
 		)
-		(uuid "8aec5258-f183-4c0b-97e5-1685bf6ca080")
-	)
-	(text_box ""
-		(exclude_from_sim no)
-		(at 63.5 107.95 0)
-		(size 190.5 6.35)
-		(stroke
-			(width 0.254)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify left top)
-		)
-		(uuid "9ece7ba1-a8f5-42dc-8185-2ad9b01ea681")
-	)
-	(text_box ""
-		(exclude_from_sim no)
-		(at 63.5 69.85 0)
-		(size 190.5 6.35)
-		(stroke
-			(width 0.254)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify left top)
-		)
-		(uuid "a53f4a44-9a33-431c-94bd-e738c00c3fb9")
-	)
-	(text_box ""
-		(exclude_from_sim no)
-		(at 63.5 101.6 0)
-		(size 190.5 6.35)
-		(stroke
-			(width 0.254)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify left top)
-		)
-		(uuid "a8a0af0c-d360-49ac-945c-e1883bc80b20")
+		(uuid "f6044794-81ac-4012-8b2a-3f0aedd28a23")
 	)
 	(text_box ""
 		(exclude_from_sim no)
 		(at 63.5 44.45 0)
-		(size 190.5 6.35)
+		(size 203.2 6.35)
 		(stroke
 			(width 0.254)
 			(type default)
@@ -670,70 +733,20 @@
 			)
 			(justify left top)
 		)
-		(uuid "b7c281f7-9c9a-4d63-aba1-c6aae5e14ab4")
+		(uuid "ffa804f7-5a76-4b18-a830-08c999896f0c")
 	)
-	(text_box ""
+	(text "Change TXS0104E to LSF0204 and add IIC PU resistor;"
 		(exclude_from_sim no)
-		(at 63.5 120.65 0)
-		(size 190.5 6.35)
-		(stroke
-			(width 0.254)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
+		(at 119.38 60.452 0)
 		(effects
 			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
+				(face "Courier New")
+				(size 2.54 2.54)
+				(thickness 0.508)
 				(bold yes)
 			)
-			(justify left top)
 		)
-		(uuid "e8813556-3dc7-49ec-a0ae-d6f28a56ab51")
-	)
-	(text_box ""
-		(exclude_from_sim no)
-		(at 63.5 82.55 0)
-		(size 190.5 6.35)
-		(stroke
-			(width 0.254)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify left top)
-		)
-		(uuid "f75590ef-ff58-412e-9a0d-bec4ec60da11")
-	)
-	(text_box ""
-		(exclude_from_sim no)
-		(at 63.5 63.5 0)
-		(size 190.5 6.35)
-		(stroke
-			(width 0.254)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(thickness 0.254)
-				(bold yes)
-			)
-			(justify left top)
-		)
-		(uuid "fbaee1ff-ebb8-439f-9b6b-836be1b9359e")
+		(uuid "14ae2334-d108-40a3-a36e-7ebe3a9939a9")
 	)
 	(text "PAGE 5"
 		(exclude_from_sim no)
@@ -774,19 +787,7 @@
 		)
 		(uuid "2cee3f58-3e34-4c76-95c3-e9160940b0f3")
 	)
-	(text "Type-C DP Alt-mode EVB"
-		(exclude_from_sim no)
-		(at 67.31 28.448 0)
-		(effects
-			(font
-				(face "Times New Roman")
-				(size 6.35 6.35)
-				(italic yes)
-			)
-		)
-		(uuid "4e4eff1b-99e0-406c-a16f-500241e23172")
-	)
-	(text "Change R9,R21 to 30kΩ; R20 to 180kΩ; Change USB-C footprint; Fix AUX channel orientation"
+	(text "Change R9,R20 to 30kΩ; R19 to 180kΩ; Change USB-C footprint; Fix AUX channel orientation"
 		(exclude_from_sim no)
 		(at 158.75 54.102 0)
 		(effects
@@ -811,6 +812,18 @@
 			)
 		)
 		(uuid "978276ec-4e09-42a5-8d91-9e4100c560f4")
+	)
+	(text "Revision History"
+		(exclude_from_sim no)
+		(at 51.816 28.448 0)
+		(effects
+			(font
+				(face "Times New Roman")
+				(size 6.35 6.35)
+				(italic yes)
+			)
+		)
+		(uuid "b351beb7-b857-42fd-85a2-36407068f9d7")
 	)
 	(text "The first edition of EVB"
 		(exclude_from_sim no)
@@ -851,6 +864,19 @@
 		)
 		(uuid "e97ab928-5e93-4ba4-8dc4-50fd214dcc59")
 	)
+	(text "0.2a"
+		(exclude_from_sim no)
+		(at 56.896 60.452 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 2.54 2.54)
+				(thickness 0.508)
+				(bold yes)
+			)
+		)
+		(uuid "ed977c35-e215-45f1-9ddb-14a855719034")
+	)
 	(text "0.2"
 		(exclude_from_sim no)
 		(at 55.88 54.102 0)
@@ -863,6 +889,19 @@
 			)
 		)
 		(uuid "f275af51-0d2d-4abb-bd1e-a1676f37ed78")
+	)
+	(text "25/03/21"
+		(exclude_from_sim no)
+		(at 35.306 60.452 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 2.54 2.54)
+				(thickness 0.508)
+				(bold yes)
+			)
+		)
+		(uuid "f2f7d570-0502-4587-a733-58465d214a57")
 	)
 	(text "PAGE 4"
 		(exclude_from_sim no)

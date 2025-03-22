@@ -1,0 +1,328 @@
+(footprint "Oscillator_SMD_SeikoEpson_SG210-4Pin_2.5x2.0mm"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(locked yes)
+	(layer "F.Cu")
+	(property "Reference" "X1"
+		(at -0.114 -2.30475 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "74d91259-cf64-4c85-9230-6cd42a090ec7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SG-210STF 26.000000MHz"
+		(at -0.114 2.53375 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7f30489d-16ee-4e46-adfa-1f91ec8e00e6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" "User:Oscillator_SMD_SeikoEpson_SG210-4Pin_2.5x2.0mm"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e5fc8d16-d17f-46be-9c68-7c920268eb11")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://support.epson.biz/td/api/doc_check.php?mode=dl&lang=en&Parts=SG-210STF"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fe91d3ea-74ff-4a06-a243-4545632d5959")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "CMOS Crystal Oscillator SPXO"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d71bc664-bb41-4750-a415-68c7d8a78ecf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start -2.0065 0.2005)
+		(end -2.0065 1.7575)
+		(stroke
+			(width 0.1525)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "11f67800-5f96-4b2b-ad75-1b29cc48a4d5")
+	)
+	(fp_line
+		(start -2.0065 1.7575)
+		(end -0.3505 1.7575)
+		(stroke
+			(width 0.1525)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "02f72ccc-11e7-4ef8-a1f2-3e51afbd2baa")
+	)
+	(fp_line
+		(start -1.7785 -1.5285)
+		(end 1.7785 -1.5285)
+		(stroke
+			(width 0.1525)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "abe69a3d-16f7-430f-8d15-a9dad554a8e7")
+	)
+	(fp_line
+		(start -1.7785 1.5285)
+		(end -1.7785 -1.5285)
+		(stroke
+			(width 0.1525)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "7e530b9c-3db9-4f9b-8356-ed7467cbf3d9")
+	)
+	(fp_line
+		(start 1.7785 -1.5285)
+		(end 1.7785 1.5285)
+		(stroke
+			(width 0.1525)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "d7114bbd-7eba-42e4-87a5-17f6ed4f2dd3")
+	)
+	(fp_line
+		(start 1.7785 1.5285)
+		(end -1.7785 1.5285)
+		(stroke
+			(width 0.1525)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "e43e11b0-eb94-42a2-a2a2-dc674e278666")
+	)
+	(fp_line
+		(start -1.25 -1)
+		(end -1.25 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cfd7d6f1-07ad-4776-9618-4a8a2c8ecf5f")
+	)
+	(fp_line
+		(start -1.25 1)
+		(end 1.25 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9b87b6d2-c78d-4c0d-a7b9-0b1a152aea88")
+	)
+	(fp_line
+		(start -1.249999 0)
+		(end -0.25 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fecc71d1-770d-40e5-8a53-3ee136688832")
+	)
+	(fp_line
+		(start 1.25 -1)
+		(end -1.25 -1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "7389286f-df6e-447c-b817-55113212b740")
+	)
+	(fp_line
+		(start 1.25 1)
+		(end 1.25 -1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "24ddd045-8e04-4652-b8a5-ece0e0b9fb66")
+	)
+	(fp_poly
+		(pts
+			(xy -1.25 -1) (xy -0.45 -1) (xy -0.45 -0.325) (xy -1.25 -0.325)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "13769bce-1064-4761-9cfc-73adc838e1e0")
+	)
+	(fp_poly
+		(pts
+			(xy -0.45 1) (xy -1.25 1) (xy -1.25 0.325) (xy -0.45 0.325)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "e4b6d0b2-6c49-43d4-a1f1-39db96957725")
+	)
+	(fp_poly
+		(pts
+			(xy 1.25 -0.325) (xy 0.45 -0.325) (xy 0.45 -1) (xy 1.25 -1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "21d6298d-9149-4071-8c92-79bf8342d91c")
+	)
+	(fp_poly
+		(pts
+			(xy 1.25 1) (xy 0.45 1) (xy 0.45 0.325) (xy 1.25 0.325)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.1")
+		(uuid "33045130-9790-4744-b06f-9b26a94bff8e")
+	)
+	(fp_line
+		(start -1.25 -1)
+		(end 1.25 -1)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "3ffa5a30-f5c2-43dc-ab68-4e9b3333cc2b")
+	)
+	(fp_line
+		(start -1.25 1)
+		(end -1.25 -1)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "a6a3cba7-6a46-45e0-88f6-40f1edef47cb")
+	)
+	(fp_line
+		(start 1.25 -1)
+		(end 1.25 1)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "7c956b11-666d-425b-8b23-8291406bca95")
+	)
+	(fp_line
+		(start 1.25 1)
+		(end -1.25 1)
+		(stroke
+			(width 0.051)
+			(type default)
+		)
+		(layer "User.2")
+		(uuid "6c77fc56-2aec-40c4-b315-7f47cf85394c")
+	)
+	(fp_poly
+		(pts
+			(xy -1.19 1) (xy -1.207574 0.957574) (xy -1.25 0.94) (xy -1.292426 0.957574) (xy -1.31 1) (xy -1.292426 1.042426)
+			(xy -1.25 1.06) (xy -1.207574 1.042426)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill solid)
+		(layer "User.3")
+		(uuid "b9722cc3-ebd8-447c-81f3-56057e0f39b3")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "55f6b774-5958-406f-9de1-44d0b91b216a")
+		(effects
+			(font
+				(size 0.5 0.5)
+				(thickness 0.075)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -0.95 0.750001)
+		(size 1.2 1.1)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.2272727273)
+		(uuid "9fd40042-06d6-4352-89b6-fd5b2968abd2")
+	)
+	(pad "2" smd roundrect
+		(at 0.95 0.750001)
+		(size 1.2 1.1)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.2083333333)
+		(uuid "0f1ef7a9-82e0-4b29-b8d3-958ee529435b")
+	)
+	(pad "3" smd roundrect
+		(at 0.95 -0.750001)
+		(size 1.2 1.1)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.2272727273)
+		(uuid "ed53924b-69c0-4b24-b381-d092980caf5b")
+	)
+	(pad "4" smd roundrect
+		(at -0.95 -0.750001)
+		(size 1.2 1.1)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.2272727273)
+		(uuid "3e9f1a68-9c44-408d-b4bd-c513ebfe50a7")
+	)
+	(model "${KIPRJMOD}/EASYEDA_MODELS/OSC-SMD_4P-L2.5-W2.0-H0.6.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -0)
+		)
+	)
+)

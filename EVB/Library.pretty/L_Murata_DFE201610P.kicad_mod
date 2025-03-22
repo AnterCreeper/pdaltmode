@@ -2,13 +2,15 @@
 	(version 20240108)
 	(generator "pcbnew")
 	(generator_version "8.0")
+	(locked yes)
 	(layer "F.Cu")
 	(descr "Inductor, Murata, DFE201610P, 2.0x1.6x1.0mm, (https://www.murata.com/~/media/webrenewal/products/inductor/chip/tokoproducts/wirewoundmetalalloychiptype/m_dfe201610p.ashx), generated with kicad-footprint-generator gen_inductor.py")
 	(tags "Inductor power chip flatwire")
 	(property "Reference" "REF**"
-		(at 0 -1.8 0)
+		(at 0 -1.8 180)
 		(layer "F.SilkS")
-		(uuid "e0666a75-a3ca-49ea-9faf-151d2c9d4761")
+		(hide yes)
+		(uuid "16a7a302-64a3-4b33-9b65-b629039fe340")
 		(effects
 			(font
 				(size 1 1)
@@ -17,9 +19,10 @@
 		)
 	)
 	(property "Value" "2.2uH"
-		(at 0 1.8 0)
+		(at 0 1.8 180)
 		(layer "F.Fab")
-		(uuid "2630bb75-84ec-4d77-aacc-53e20c263257")
+		(hide yes)
+		(uuid "36cbbb1b-8236-4c1d-b5f6-b51506d3e3dc")
 		(effects
 			(font
 				(size 1 1)
@@ -28,10 +31,10 @@
 		)
 	)
 	(property "Footprint" "Inductor_SMD:L_Murata_DFE201610P"
-		(at 0 0 0)
+		(at 0 0 180)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "4e31737a-d8c5-4776-86b7-471d8ec3309d")
+		(uuid "b17ea10a-22b3-448b-9159-68f3c8c07bd8")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -40,10 +43,10 @@
 		)
 	)
 	(property "Datasheet" ""
-		(at 0 0 0)
+		(at 0 0 180)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "96238cb6-3338-45c1-81ed-34ee1c09286b")
+		(uuid "bba70e13-c08b-4fe5-80f9-8afadc0c4f37")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -52,10 +55,10 @@
 		)
 	)
 	(property "Description" "Inductor"
-		(at 0 0 0)
+		(at 0 0 180)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "cf6b8dd9-5c81-405a-b55a-4aac5bd53aa4")
+		(uuid "e89717b4-e805-4eb0-934d-d46ad643e404")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -72,7 +75,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2bd40b92-d456-46ff-b69c-50fc3df76ba8")
+		(uuid "39ce5df4-3769-436f-a8be-f8e4930cf6fc")
 	)
 	(fp_line
 		(start -1.26 1.06)
@@ -82,7 +85,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "75586e08-b4bd-4c1f-a72c-9412b372b377")
+		(uuid "62eb2638-9d41-45b9-a0de-a882c14e883e")
 	)
 	(fp_line
 		(start -1.25 -1.05)
@@ -92,7 +95,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "f1d7372d-bf46-4a3b-92b2-be6a69b83523")
+		(uuid "6dc14dcf-e942-4384-aa06-4e1021011e4b")
 	)
 	(fp_line
 		(start -1.25 1.05)
@@ -102,7 +105,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "9afb6228-ac66-4375-a07f-45616250a8a0")
+		(uuid "3770a6c4-ceda-4bda-96e3-62d0374ce747")
 	)
 	(fp_line
 		(start 1.25 -1.05)
@@ -112,7 +115,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "aa62d3a6-497b-4e26-9cdb-24e532a80b19")
+		(uuid "96ef9742-d192-404e-98f4-78a9dfd97fa7")
 	)
 	(fp_line
 		(start 1.25 1.05)
@@ -122,7 +125,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "fd5f1f80-fbd4-4780-9e8f-3ea5864f9ae1")
+		(uuid "161d4bbe-7182-435f-820c-adf3cd7544fd")
 	)
 	(fp_line
 		(start -1 -0.8)
@@ -132,7 +135,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "045db63f-ba70-4c72-ab08-b259aed7cbe7")
+		(uuid "50075b62-3d8c-4d61-a478-a2790f1de453")
 	)
 	(fp_line
 		(start -1 0.8)
@@ -142,7 +145,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "6bb6031e-9125-4216-b035-16224de4fdce")
+		(uuid "b6128f84-de75-40c3-a828-3d321f831478")
 	)
 	(fp_line
 		(start 1 -0.8)
@@ -152,7 +155,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "297adc13-ef5c-4bda-a95a-465d91e777b7")
+		(uuid "e5fd61c5-8f47-4755-b656-be74c197fa5b")
 	)
 	(fp_line
 		(start 1 0.8)
@@ -162,12 +165,12 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "9d5c609f-e624-4b9c-b1ed-cfad1c34a962")
+		(uuid "59575402-1935-413c-a01d-8e143a6af4be")
 	)
 	(fp_text user "${REFERENCE}"
-		(at 0 0 90)
+		(at 0 0 -90)
 		(layer "F.Fab")
-		(uuid "bdbe4b24-5101-4587-bf4f-8ee14ae38a6b")
+		(uuid "087abd21-6c8c-4ad0-858b-d5320f7bdd46")
 		(effects
 			(font
 				(size 0.5 0.5)
@@ -180,16 +183,16 @@
 		(size 0.55 1.6)
 		(layers "F.Cu" "F.Paste" "F.Mask")
 		(roundrect_rratio 0.25)
-		(uuid "94a152d9-a8f2-421f-887a-8b9bed65e7e9")
+		(uuid "a5b5cec7-6dc3-400f-80a3-5efe7d162647")
 	)
 	(pad "2" smd roundrect
 		(at 0.725 0)
 		(size 0.55 1.6)
 		(layers "F.Cu" "F.Paste" "F.Mask")
 		(roundrect_rratio 0.25)
-		(uuid "fa29e778-1245-4523-b1e4-536e49eeb731")
+		(uuid "38d2f079-9395-4c2e-9d66-c927e34e9108")
 	)
-	(model "${KICAD8_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_Murata_DFE201610P.wrl"
+	(model "${KIPRJMOD}/Library.pretty/VLS201612HBX-1R0M-1.STEP"
 		(offset
 			(xyz 0 0 0)
 		)
@@ -197,7 +200,7 @@
 			(xyz 1 1 1)
 		)
 		(rotate
-			(xyz 0 0 0)
+			(xyz -90 0 0)
 		)
 	)
 )
