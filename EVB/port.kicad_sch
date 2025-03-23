@@ -13440,7 +13440,7 @@
 				)
 			)
 		)
-		(property "Footprint" "User:USB_Micro-B_XUNPU_UX-150-ARG4"
+		(property "Footprint" "User:USB_Mini-B_Wuerth_651005136521"
 			(at 110.49 138.43 0)
 			(effects
 				(font
