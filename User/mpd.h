@@ -12,10 +12,10 @@
 #define MPD_2LANE
 
 #define MPD_TEST
-#define MPD_TEST_COLOR  0xffffff
-#define MPD_TEST_MODE   COLOR_CHECKER
+#define MPD_TEST_COLOR  0x114514
+#define MPD_TEST_MODE   COLOR_BAR
 
-#define MPD_PXLPARAM    0x01130444
+#define MPD_PXLPARAM    0x00120217
 
 //Video Format
 #define MPD_DP_BPP      OPXLFMT_RGB888
@@ -25,13 +25,12 @@
 
 //Timing Variable
 #define MPD_VSDELAY         0
-#define MPD_DP_VIDMNGEN0    0x45ED
-#define MPD_DP_VIDMNGEN1    0x8025
+#define MPD_DP_VIDGEN_N     0x80AC
 
 //HTIM01, HTIM02, VTIM01, VTIM02
 static const uint32_t rgb_timing[4] = {0x0094002C, 0x00580780, 0x00240005, 0x00040438};
 //DP0_VidSyncDly, DP0_TotalVal, DP0_StartVal, DP0_ActiveVal, DP0_SyncVal
-static const uint32_t dp_timing[5] = {0x00160840, 0x04650898, 0x002900C0, 0x04380780, 0x8005802C};
+static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x04380780, 0x8005802C};
 
 
 /* Internal Macro */
@@ -42,7 +41,7 @@ static const uint32_t dp_timing[5] = {0x00160840, 0x04650898, 0x002900C0, 0x0438
 #define MPD_LANES       1
 #endif
 
-//#define MPD_IIC_DBG
+#define MPD_IIC_DBG
 
 #define DPIPXLFMT		0x0440
 #define VS_POL_ACTIVE_LOW		(1 << 10)

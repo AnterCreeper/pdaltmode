@@ -47,7 +47,7 @@ int __IIC_WriteReg(uint16_t address, uint32_t data, int len, const int imm) {
 }
 
 int __IIC_ReadReg(uint16_t address, uint32_t data, int len, const int imm) {
-    if(len < 0) return -1;
+    if(!imm && len <= 0) return -1;
     IIC_Start();
     int i = -4;
     int j = 0;
@@ -177,13 +177,13 @@ void MPD_Init(){ //Mobile Peripheral Devices
     IIC_WriteRegI(DP_PHY_CTRL, dp_phy_ctrl);
 
     printf("Enable MPD PLL\r\n");
-    IIC_WriteRegI(DP0_PLLCTRL, PLLUPDATE | PLLEN);  //Enable DP0 PLL
+    IIC_WriteRegI(DP0_PLLCTRL, PLLUPDATE | PLLEN);   //Enable DP0 PLL
     TIM_Delay_Ms(8);
-    IIC_WriteRegI(DP1_PLLCTRL, PLLUPDATE | PLLEN);  //Enable DP1 PLL
+    IIC_WriteRegI(DP1_PLLCTRL, PLLUPDATE | PLLEN);   //Enable DP1 PLL
     TIM_Delay_Ms(8);
 #ifdef MPD_TEST
     IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
-    IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);  //Enable PXL PLL
+    IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);   //Enable PXL PLL
     TIM_Delay_Ms(8);
 #endif
 
@@ -414,13 +414,14 @@ void MPD_CfgVideo(){
         MPD_Test_EDID(edid);
     }
 
-    IIC_WriteRegI(DPIPXLFMT, MPD_DPI_POL | MPD_DPI_FMT | MPD_DPI_BPP);
     IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_ENABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
 
     IIC_WriteReg(VP_TIM, (void*)rgb_timing, 16);
-    IIC_WriteReg(DP0_TIM, (void*)dp_timing, 20);
     IIC_WriteRegI(VFUEN0, 0x01);    //Commit Timing Variable
-    IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(22) | TU_SIZE(63) | BPC | FMT_RGB);  //DP0_Misc
+    IIC_WriteRegI(DPIPXLFMT, MPD_DPI_POL | MPD_DPI_FMT | MPD_DPI_BPP);
+
+    IIC_WriteReg(DP0_TIM, (void*)dp_timing, 20);
+    IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(42) | TU_SIZE(63) | BPC | FMT_RGB);  //DP0_Misc
     return;
 }
 
@@ -431,16 +432,19 @@ void MPD_CfgTest(){
     printf("Enable Video Transmition\r\n");
 #endif
     IIC_WriteRegI(TSTCTL, ENI2CFILTER | MPD_TEST_MODE | (MPD_TEST_COLOR << 8));
-    IIC_WriteRegI(DP0_VIDMNGEN0, MPD_DP_VIDMNGEN0);
-    IIC_WriteRegI(DP0_VIDMNGEN1, MPD_DP_VIDMNGEN1);
+    IIC_WriteRegI(DP0_VIDMNGEN1, MPD_DP_VIDGEN_N);
 
     IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | DP_EN);
     IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | VID_EN | DP_EN);
 #ifdef MPD_TEST
-    IIC_WriteRegI(SYSCTRL, DP0_OSCLK_AVALIABLE | DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_COLOR_BAR); //SYSCTRL, Set DP Video Source
+    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_COLOR_BAR); //SYSCTRL, Set DP Video Source
 #else
-    IIC_WriteRegI(SYSCTRL, DP0_OSCLK_AVALIABLE | DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_DPI_RX); //SYSCTRL, Set DP Video Source
+    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_DPI_RX); //SYSCTRL, Set DP Video Source
 #endif
+    TIM_Delay_Ms(100);
+
+    printf("vid_M: %d\r\n", IIC_ReadRegI(DP0_VMNGENSTATUS, 4));
+    printf("vid_N: %d\r\n", IIC_ReadRegI(DP0_VIDMNGEN1, 4));
     return;
 }
 
