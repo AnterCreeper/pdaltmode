@@ -1,7 +1,7 @@
 //#define IGNORE_HPD
 //#define NO_MPD
 //#define FORCE_SOFTMUL
-#define FLIP_SEL 1    //debug only, set 0 for normal
+#define FLIP_SEL 0    //debug only, set 0 for normal
 
 #include "timer.h"
 #include "sys.h"
@@ -802,6 +802,7 @@ int PD_Listen_Default(size_t len, pd_state_t* PD_Ctl) {
 void PD_Proc(pd_state_t* PD_Ctl) {
     switch(PD_Ctl->Status){
     case STA_DISCONNECT:
+        MPD_Disable();
         WS2812_SetColor(RED);
         BC_Wait(&PD_Ctl->BC_Ctl);
         SYS_SLP();
