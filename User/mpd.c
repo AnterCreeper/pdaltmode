@@ -182,7 +182,6 @@ void MPD_Init(){ //Mobile Peripheral Devices
     IIC_WriteRegI(DP1_PLLCTRL, PLLUPDATE | PLLEN);  //Enable DP1 PLL
     TIM_Delay_Ms(8);
 #ifdef MPD_TEST
-    IIC_WriteRegI(PXL_PLLCTRL, PLLBYP | PLLEN);     //Enable PXL PLL
     IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
     IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);  //Enable PXL PLL
     TIM_Delay_Ms(8);
