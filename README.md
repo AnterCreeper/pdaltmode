@@ -40,4 +40,4 @@ Datasheet of TC358867XBG is included in the project, which include external LICE
 
 1. Download and Open with MounRiver Studio II [Download Page](http://www.mounriver.com/download)
 2. Compile and Run
-3. Files except in User is remain unchanged from default.
+3. ~~Files except in User is remain unchanged from default.~~
