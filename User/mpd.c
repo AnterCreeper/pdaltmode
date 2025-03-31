@@ -109,8 +109,8 @@ void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler() {
     if(EXTI_GetITStatus(EXTI_Line0) != RESET) {
         uint32_t sys, irq;
-        IIC_ReadReg(0x0564, &irq, 4);
-        IIC_ReadReg(0x0508, &sys, 4);
+        IIC_ReadReg(INTSTS_G, &irq, 4);
+        IIC_ReadReg(SYSSTAT, &sys, 4);
         printf("Interrupt from MPD\r\n");
         printf("mpd_irq: 0x%08x\r\n", irq);
         printf("mpd_sys: 0x%08x\r\n", sys);
@@ -196,10 +196,9 @@ void MPD_Init(){ //Mobile Peripheral Devices
         TIM_Delay_Us(500);
         IIC_ReadReg(DP_PHY_CTRL, &result, 4);
     } while((result & PHY_RDY) == 0); //Query DP PHY Ready
-    /*
+
     MPD_IRQInit();
-    IIC_WriteRegI(0x0560, (1 << 16));   //Enable MPD SYS Interrupt
-    */
+    IIC_WriteRegI(INTCTL_G, (1 << 16));   //Enable MPD SYS Interrupt
     printf("MPD Ready\r\n");
     return;
 }
@@ -445,6 +444,7 @@ void MPD_CfgTest(){
 
     printf("vid_M: %d\r\n", IIC_ReadRegI(DP0_VMNGENSTATUS, 4));
     printf("vid_N: %d\r\n", IIC_ReadRegI(DP0_VIDMNGEN1, 4));
+    printf("vfuen: %d\r\n", IIC_ReadRegI(VFUEN0, 4));
     return;
 }
 
