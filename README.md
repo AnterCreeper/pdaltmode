@@ -13,8 +13,9 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 
 ### TODO
 
-1. Active Cable Support (However I have no such one. lol)
-2. Pin Assignment Decision
+1. fix TC358867XBG no signal issue，修复无视频信号输出的BUG
+2. Type-C DisplayPort Pin Assignment Decision，Type-C DP信号管脚使用的选择逻辑
+3. Active Cable Support (However I have no such one. lol)，主动线的VDM逻辑(不过由于我没有这样的线，大概率无法完成支持)
 
 ### Overview
 

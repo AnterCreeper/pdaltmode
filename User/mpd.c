@@ -1,109 +1,16 @@
 #include "timer.h"
 #include "gpio.h"
-#include "iic.h"
+#include "iic_dev.h"
 #include "mpd.h"
 #include "debug.h"
 
 #define GETBITS(x, n, m) ((x >> n) & ((1 << (m -n + 1)) - 1))
 
-int __IIC_WriteReg(uint16_t address, uint32_t data, int len, const int imm) {
-#ifdef MPD_IIC_DBG
-    uint32_t dbg = data;
-#endif
-    if(len < 0) return -1;
-    IIC_Start();
-    int i = -3;
-    int j = 0;
-    while(i < len) {
-        switch(i) {
-        case -3:
-            IIC_SendByte(MPD_DEV_ADR << 1);
-            break;
-        case -2:
-            IIC_SendByte(address >> 8);
-            break;
-        case -1:
-            IIC_SendByte(address & 0xFF);
-            break;
-        default:
-            IIC_SendByte(imm ? data & 0xFF : ((uint8_t*)data)[i]);
-        }
-        if(!IIC_WaitAck()) {
-            i++;
-            if(imm && i > 0) data >>= 8;
-        }
-        else if(++j == 3) return -1;
-    }
-    IIC_Stop();
-#ifdef MPD_IIC_DBG
-    printf("debug IIC: write ");
-    if(imm) printf("%08x", dbg);
-    else {
-        for(int i = len - 1; i >= 0; i--) printf("%02x", ((uint8_t*)data)[i]);
-    }
-    printf(" at 0x%04x\r\n", address);
-#endif
-    return 0;
-}
-
-int __IIC_ReadReg(uint16_t address, uint32_t data, int len, const int imm) {
-    if(!imm && len <= 0) return -1;
-    IIC_Start();
-    int i = -4;
-    int j = 0;
-    while(i < len) {
-        switch(i) {
-        case -4:
-            IIC_SendByte(MPD_DEV_ADR << 1);
-            break;
-        case -3:
-            IIC_SendByte(address >> 8);
-            break;
-        case -2:
-            IIC_SendByte(address & 0xFF);
-            break;
-        case -1:
-            IIC_Start();
-            IIC_SendByte((MPD_DEV_ADR << 1) | 0x1);
-            break;
-        default:
-            if(imm) data = data | (IIC_ReadByte() << (i << 3));
-            else ((uint8_t*)data)[i] = IIC_ReadByte();
-            IIC_SendACK();
-        }
-        if(i >= 0 || !IIC_WaitAck()) {
-            i++;
-            continue;
-        }
-        if(++j == 3) return -1;
-    }
-    IIC_Stop();
-#ifdef MPD_IIC_DBG
-    printf("debug IIC: read ");
-    if(imm) printf("%08x", data);
-    else {
-        for(int i = len - 1; i >= 0; i--) printf("%02x", ((uint8_t*)data)[i]);
-    }
-    printf(" at 0x%04x\r\n", address);
-#endif
-    return imm ? data : 0;
-}
-
-static inline int IIC_WriteReg(uint16_t address, void* data, int len) {
-    return __IIC_WriteReg(address, (uint32_t)data, len, 0);
-}
-
-static inline int IIC_WriteRegI(uint16_t address, uint32_t data) {
-    return __IIC_WriteReg(address, data, 4, 1);
-}
-
-static inline int IIC_ReadReg(uint16_t address, void* data, int len) {
-    return __IIC_ReadReg(address, (uint32_t)data, len, 0);
-}
-
-static inline int IIC_ReadRegI(uint16_t address, int len) {
-    return __IIC_ReadReg(address, 0, len, 1);
-}
+//Chip always write data in 4bytes
+#define IIC_WriteReg(address,data,len) __IIC_WriteReg(MPD_DEV_ADR, address, (uint32_t)(data), len, 0, 0)
+#define IIC_WriteRegI(address,data) __IIC_WriteReg(MPD_DEV_ADR, address, data, 4, 1, 0)
+#define IIC_ReadReg(address,data,len) __IIC_ReadReg(MPD_DEV_ADR, address, (uint32_t)(data), len, 0, 0)
+#define IIC_ReadRegI(address,len) __IIC_ReadReg(MPD_DEV_ADR, address, 0, len, 1, 0)
 
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler() {
@@ -158,7 +65,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
                                 DP_SRCCTRL_NOTP | DP_SRCCTRL_LANESKEW |
                                 DP_SRCCTRL_LANES_2 | MPD_BW | DP_SRCCTRL_AUTOCORRECT);
 #else
-    IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
+    IIC_WriteRegMPDI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
                                 DP_SRCCTRL_SCRMBLDIS | DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_NOTP | DP_SRCCTRL_LANESKEW |
                                 MPD_BW | DP_SRCCTRL_AUTOCORRECT);

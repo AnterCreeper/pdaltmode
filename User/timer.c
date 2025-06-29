@@ -73,7 +73,7 @@ void TIM_Wait(timer_t next_timer) {
 
 void TIM_WaitL(timer_t next_timer) {
     while(TIM1_CNT < next_timer - SystemCoreClock/8000) __WFI();
-    TIM_Wait(next_timer);
+    TIM_Wait(next_timer); //FIXME
     return;
 }
 

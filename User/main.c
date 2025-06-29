@@ -1,7 +1,7 @@
 //#define IGNORE_HPD
 //#define NO_MPD
 //#define FORCE_SOFTMUL
-#define FLIP_SEL 0    //debug only, set 0 for normal
+#define FLIP_SEL 0    //reverse type-c mux select signal, debug only and set 0 for normal
 
 #include "timer.h"
 #include "sys.h"
@@ -14,14 +14,8 @@
 #include <ch32x035_opa.h>
 
 void VSNS_INIT() {
-    printf("Enable ADC\r\n");
-    GPIO_InitTypeDef GPIO_InitStructure = {0};
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOA, &GPIO_InitStructure); //MCU_VSENSE
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-    GPIO_Init(GPIOA, &GPIO_InitStructure); //MCU_PGA_OUT
+    GPIO_IN_INIT(GPIOA, GPIO_Pin_7);
+    GPIO_Analog_INIT(GPIOA, GPIO_Pin_4);
 
     OPA_Unlock();
     OPA_InitTypeDef OPA_InitStructure = {0};
@@ -32,10 +26,11 @@ void VSNS_INIT() {
     OPA_InitStructure.FB = FB_ON;
     OPA_Init(&OPA_InitStructure);
     OPA_Cmd(OPA2, ENABLE);
+    printf("Enable OPA\r\n");
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
     ADC_DeInit(ADC1);
-    ADC_CLKConfig(ADC1, ADC_CLK_Div6);
+    ADC_CLKConfig(ADC1, ADC_CLK_Div4);
     ADC_InitTypeDef ADC_InitStructure = {0};
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;
@@ -45,6 +40,7 @@ void VSNS_INIT() {
     ADC_InitStructure.ADC_NbrOfChannel = 1;
     ADC_Init(ADC1, &ADC_InitStructure);
     ADC_Cmd(ADC1, ENABLE);
+    printf("Enable ADC\r\n");
 
     return;
 }

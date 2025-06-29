@@ -3,7 +3,9 @@
 
 #include "debug.h"
 
-#define TARGET_VERSION  "0.2"
+#define TARGET_PROJECT  "pdaltmode"
+#define TARGET_VERSION  "0.2a"
+#define TARGET_AUTHOR   "Anter"
 
 #ifdef __clang
 #define TARGET_COMPILER "clang"
@@ -15,8 +17,10 @@
 #endif
 #endif
 
-#define LP_ENABLE   //System Low Power Mode Enable
 #define SLP_ENABLE  //System Sleep Mode Enable
+#ifdef SLP_ENABLE
+//#define LP_ENABLE   //System Low Power Mode Enable, need comment for debug
+#endif
 
 #define ESIG ((ESIG_Typedef *)(uint32_t)0x1FFFF7E0)
 
