@@ -41,8 +41,6 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 #define MPD_LANES       1
 #endif
 
-//#define MPD_IIC_DBG
-
 #define INTCTL_G    0x0560
 #define INTSTS_G    0x0564
 
