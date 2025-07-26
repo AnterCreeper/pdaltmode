@@ -1,15 +1,6 @@
 #include "iic_dev.h"
 #include "debug.h"
 
-/*
-    dev: 7bit device address
-    address: register address
-    data: register data
-    len: data length in bytes
-    imm: data is address or immediate number
-    b8: address length, 1: 8b; 0: 16b
-*/
-
 int __IIC_WriteReg(const uint8_t dev, const uint16_t address, uint32_t data, const int len, const int imm, const int b8) {
 #ifdef IIC_DEV_DBG
     uint32_t dbg = data;

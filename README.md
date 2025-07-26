@@ -31,9 +31,11 @@ This Project implements state machines defined in:
 1. Universal Serial Bus Power Delivery Specification Rev 2.0 Ver 1.3
 2. Universal Serial Bus Type-C Cable and Connector Specification Ver 2.2.
 3. VESA DisplayPort Alt Mode on USB Type-C Standard. Ver 1.3/1.4.
+4. VESA DisplayPort Standard. Version 1, Revision 2.
 
 Doc. 1 and 2 can be accessed from https://github.com/usb-c/USB-Type-C   
-For Doc. 3, since **DISTRIBUTION TO NON-MEMBERS IS PROHIBITED**, contact me at [wangzhihao9@hotmail.com](mailto:wangzhihao9@hotmail.com)
+For Doc. 3, since **DISTRIBUTION TO NON-MEMBERS IS PROHIBITED**, contact me at [wangzhihao9@hotmail.com](mailto:wangzhihao9@hotmail.com)  
+Doc.4 is located at https://glenwing.github.io/docs/DP-1.2.pdf
 
 Datasheet of TC358867XBG is included in the project, which include external LICENSE.
 

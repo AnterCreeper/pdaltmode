@@ -13,9 +13,9 @@
 
 #define MPD_TEST
 #define MPD_TEST_COLOR  0x114514
-#define MPD_TEST_MODE   COLOR_BAR
+#define MPD_TEST_MODE   COLOR_CHECKER
 
-#define MPD_PXLPARAM    0x00120217
+#define MPD_PXLPARAM    0x00120539  //FIXME: Pixel PLL input freq out of range
 
 //Video Format
 #define MPD_DP_BPP      OPXLFMT_RGB888
@@ -24,14 +24,47 @@
 #define MPD_DPI_BPP     DPI_BPP_RGB888
 
 //Timing Variable
-#define MPD_VSDELAY         0
-#define MPD_DP_VIDGEN_N     0x80AC
+#define MPD_VSDELAY         0       //FIXME
+#define MPD_DP_VIDGEN_N     32768
+
+#define MPD_HPW         44
+#define MPD_HBPR        148
+#define MPD_Hactive     1920
+#define MPD_HFPR        88
+#define MPD_VPW         5
+#define MPD_VBPR        36
+#define MPD_Vactive     1080
+#define MPD_VFPR        4
+
+#define MPD_MAX_TU_SYMBOL           42  //DIV_ROUND_UP(in_bw * TU_SIZE_RECOMMENDED, out_bw)
+#define MPD_TU_SIZE_RECOMMENDED     63
 
 //HTIM01, HTIM02, VTIM01, VTIM02
-static const uint32_t rgb_timing[4] = {0x0094002C, 0x00580780, 0x00240005, 0x00040438};
-//DP0_VidSyncDly, DP0_TotalVal, DP0_StartVal, DP0_ActiveVal, DP0_SyncVal
-static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x04380780, 0x8005802C};
+static const uint16_t rgb_timing[8] = {
+    MPD_HPW,
+    MPD_HBPR,
+    MPD_Hactive,
+    MPD_HFPR,
+    MPD_VPW,
+    MPD_VBPR,
+    MPD_Vactive,
+    MPD_VFPR
+};
 
+//DP0_VidSyncDly, DP0_TotalVal, DP0_StartVal, DP0_ActiveVal, DP0_SyncVal
+const uint16_t dp_timing[10] = {
+    MPD_HPW + MPD_HBPR + MPD_Hactive, //vid_sync_dly
+    MPD_MAX_TU_SYMBOL,
+    MPD_HPW + MPD_HBPR + MPD_Hactive + MPD_HFPR, //h_total
+    MPD_VPW + MPD_VBPR + MPD_Vactive + MPD_VFPR, //v_total
+    MPD_HPW + MPD_HBPR, //h_start
+    MPD_VPW + MPD_VBPR, //v_start
+    MPD_Hactive,
+    MPD_Vactive,
+    MPD_HPW, //active high
+    MPD_VPW
+};
+    
 
 /* Internal Macro */
 
@@ -43,6 +76,7 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 
 #define INTCTL_G    0x0560
 #define INTSTS_G    0x0564
+#define INT_SYSERR  BIT(16)
 
 #define DPIPXLFMT   0x0440
 #define VS_POL_ACTIVE_LOW		(1 << 10)
@@ -58,8 +92,8 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 #define DPI_BPP_RGB666			(1 << 0)
 #define DPI_BPP_RGB565			(2 << 0)
 
-#define VPCTRL0			0x0450
-#define VSDELAY(x)			(x << 20)
+#define VPCTRL0		0x0450
+#define VSDELAY(x)	((x) << 20)
 #define OPXLFMT_RGB666		(0 << 8)
 #define OPXLFMT_RGB888		(1 << 8)
 #define FRMSYNC_DISABLED	(0 << 4) /* Video Timing Gen Disabled */
@@ -69,11 +103,18 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 
 #define VP_TIM			0x0454
 #define VFUEN0			0x0464
+#define VFUEN           BIT(0)
 
 #define TC_IDREG		0x0500
 #define SYSBOOT			0x0504
 #define SYSSTAT			0x0508
 #define SYSRSTENB		0x050c
+#define ENBI2C          BIT(0)
+#define ENBLCD0         BIT(2)
+#define ENBBM           BIT(3)
+#define ENBDSIRX        BIT(4)
+#define ENBREG          BIT(5)
+#define ENBHDCP         BIT(8)
 #define SYSCTRL			0x0510
 #define DP0_OSCLK_AVALIABLE     (1 << 11)
 #define DP0_AUDSRC_NO_INPUT		(0 << 3)
@@ -89,6 +130,11 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 #define AUD_EN			BIT(2)      /* Video transmission enable */
 #define VID_EN			BIT(1)      /* Video transmission enable */
 #define DP_EN			BIT(0)      /* Enable DPTX function */
+#ifdef MPD_2LANE
+#define DP_PHY_CTRL_EN  BGREN | PWR_SW_EN | PHY_2LANE | PHY_A0_EN | PHY_M0_EN
+#else
+#define DP_PHY_CTRL_EN  BGREN | PWR_SW_EN | PHY_A0_EN | PHY_M0_EN
+#endif
 
 #define DP0_VIDMNGEN0	0x0610	    /* DP0 Video Force M Value Register */
 #define DP0_VIDMNGEN1	0x0614	    /* DP0 Video Force N Value Register */
@@ -197,6 +243,8 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 #define DPCD_TRAINING_SET           0x00103
 #define DPCD_ML_CODING_SET          0x00108
 #define DPCD_LANE_STATUS		    0x00202
+#define DPCD_LANE_ALIGN_STATUS      0x00204
+#define DPCD_SINK_STATUS            0x00205
 #define DPCD_ADJUST_REQUEST         0x00206
 #define DPCD_SYMBOL_ERR_CNT         0x00210
 #define DPCD_EDP_CONFIGURATION_SET  0x0010a
@@ -216,8 +264,7 @@ static const uint32_t dp_timing[5] = {0x002A0840, 0x04650898, 0x002900C0, 0x0438
 
 void MPD_Init();
 int MPD_CfgLink();
-void MPD_CfgVideo();
-void MPD_CfgTest();
+void MPD_CfgStream();
 void MPD_Disable();
 
 #endif

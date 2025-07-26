@@ -4,12 +4,14 @@
 #include <ch32x035_rcc.h>
 #include "gpio.h"
 
-#define GREEN       0x070000
-#define RED         0x000700
-#define BLUE        0x000007
-#define CYAN        0x070007
-#define YELLOW      0x070700
-#define MAGENTA     0x000707
+#define BRIGHTNESS  0x07
+
+#define GREEN       (BRIGHTNESS << 16)
+#define RED         (BRIGHTNESS << 8)
+#define BLUE        (BRIGHTNESS)
+#define CYAN        (BLUE | GREEN)
+#define YELLOW      (GREEN | RED)
+#define MAGENTA     (RED | BLUE)
 
 #define WS2812_PORT     GPIOA
 #define WS2812_PIN      GPIO_Pin_0

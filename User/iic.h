@@ -10,6 +10,9 @@
 
 #define IIC_GPIO_INIT() RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE)
 
+
+/* Internal Macro */
+
 void IIC_Init();
 void IIC_Start();
 void IIC_Stop();
@@ -18,7 +21,5 @@ uint8_t IIC_ReadByte();
 int  IIC_WaitAck();
 void IIC_SendACK();
 void IIC_SendNACK();
-
-#define IIC_SendRetry(x) do IIC_SendByte(x); while(IIC_WaitAck())
 
 #endif

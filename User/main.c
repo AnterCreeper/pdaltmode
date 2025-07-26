@@ -755,8 +755,7 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
         PD_Enter_ListenMode(PD_Ctl);
 #ifndef NO_MPD
         if(!MPD_CfgLink()) {
-            MPD_CfgVideo();
-            MPD_CfgTest();
+            MPD_CfgStream();
             WS2812_SetColor(BLUE);
             PD_Ctl->DP_Status.LT = 1;
         } else {

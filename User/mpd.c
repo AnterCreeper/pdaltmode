@@ -4,7 +4,7 @@
 #include "mpd.h"
 #include "debug.h"
 
-#define GETBITS(x, n, m) ((x >> n) & ((1 << (m -n + 1)) - 1))
+#define GETBITS(x, n, m) ((x >> n) & ((1 << (m - n + 1)) - 1))
 
 //Chip always write data in 4bytes
 #define IIC_WriteReg(address,data,len) __IIC_WriteReg(MPD_DEV_ADR, address, (uint32_t)(data), len, 0, 0)
@@ -18,9 +18,11 @@ void EXTI7_0_IRQHandler() {
         uint32_t sys, irq;
         IIC_ReadReg(INTSTS_G, &irq, 4);
         IIC_ReadReg(SYSSTAT, &sys, 4);
-        printf("Interrupt from MPD\r\n");
-        printf("mpd_irq: 0x%08x\r\n", irq);
-        printf("mpd_sys: 0x%08x\r\n", sys);
+        if(irq & INT_SYSERR) {
+            printf("IRQ from MPD\r\n");
+            printf("err: 0x%08x\r\n", sys);
+        }
+        IIC_WriteRegI(INTSTS_G, irq);
         EXTI_ClearITPendingBit(EXTI_Line0);
     }
     return;
@@ -46,11 +48,15 @@ void MPD_IRQInit() {
 }
 
 void MPD_Init(){ //Mobile Peripheral Devices
-    printf("Reset MPD\r\n");
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     GPIO_OUT_INIT(GPIOB, GPIO_Pin_1, Bit_SET);    //MCU_DP_RST#
     TIM_Delay_Us(1000);   //Tcorerdy
     GPIO_IPU_INIT(GPIOB, GPIO_Pin_0);    //MCU_DP_INT
+
+    IIC_WriteRegI(SYSRSTENB, ENBI2C);
+    IIC_WriteRegI(SYSRSTENB, ENBLCD0 | ENBBM | ENBDSIRX | ENBREG | ENBHDCP | ENBI2C);
+    TIM_Delay_Ms(10);
+    printf("Reset MPD\r\n");
 
     uint32_t id = 0, pin = 0;
     IIC_ReadReg(TC_IDREG, &id, 2);
@@ -76,27 +82,18 @@ void MPD_Init(){ //Mobile Peripheral Devices
                                 DP_SRCCTRL_NOTP | MPD_BW);
     IIC_WriteRegI(SYS_PLLPARAM, MPD_REFCLK | LSCLK_DIV_1);
 
-#ifdef MPD_2LANE
-    uint32_t dp_phy_ctrl = BGREN | PWR_SW_EN | PHY_2LANE | PHY_A0_EN | PHY_M0_EN;
-#else
-    uint32_t dp_phy_ctrl = BGREN | PWR_SW_EN | PHY_A0_EN | PHY_M0_EN;
-#endif
-    IIC_WriteRegI(DP_PHY_CTRL, dp_phy_ctrl);
+    IIC_WriteRegI(DP_PHY_CTRL, DP_PHY_CTRL_EN);
 
     printf("Enable MPD PLL\r\n");
     IIC_WriteRegI(DP0_PLLCTRL, PLLUPDATE | PLLEN);   //Enable DP0 PLL
-    TIM_Delay_Ms(8);
+    TIM_Delay_Ms(10);
     IIC_WriteRegI(DP1_PLLCTRL, PLLUPDATE | PLLEN);   //Enable DP1 PLL
-    TIM_Delay_Ms(8);
-#ifdef MPD_TEST
-    IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
-    IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);   //Enable PXL PLL
-    TIM_Delay_Ms(8);
-#endif
+    TIM_Delay_Ms(10);
 
     printf("Reset MPD Func\r\n");
-    IIC_WriteRegI(DP_PHY_CTRL, dp_phy_ctrl | DP_PHY_RST | PHY_M0_RST | PHY_M1_RST);
-    IIC_WriteRegI(DP_PHY_CTRL, dp_phy_ctrl);
+    IIC_WriteRegI(DP_PHY_CTRL, DP_PHY_CTRL_EN | DP_PHY_RST | PHY_M0_RST | PHY_M1_RST);
+    TIM_Delay_Us(200);
+    IIC_WriteRegI(DP_PHY_CTRL, DP_PHY_CTRL_EN);
 
     uint32_t result;
     do {
@@ -105,7 +102,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     } while((result & PHY_RDY) == 0); //Query DP PHY Ready
 
     MPD_IRQInit();
-    IIC_WriteRegI(INTCTL_G, (1 << 16));   //Enable MPD SYS Interrupt
+    IIC_WriteRegI(INTCTL_G, INT_SYSERR);   //Enable MPD INT_SYSERR
     printf("MPD Ready\r\n");
     return;
 }
@@ -162,7 +159,10 @@ int MPD_CfgLink(){
     uint32_t cap = MPD_ReadAuxI(4, DPCD_REV);
     printf("dp_sink_cap: 0x%08x\r\n", cap);
 
-    if((IIC_ReadRegI(DP0CTL, 1) & DP_EN) != 0) {
+    IIC_WriteRegI(DP_PHY_CTRL, DP_PHY_CTRL_EN);
+    TIM_Delay_Us(100);
+
+    if(IIC_ReadRegI(DP0CTL, 1) & DP_EN) {
         printf("Warning: Unexpected MPD DP Enabled before LT\r\n");
         IIC_WriteRegI(DP0CTL, 0x0); //Disable DP Output
     }
@@ -187,6 +187,8 @@ int MPD_CfgLink(){
                                 DP_SRCCTRL_SCRMBLDIS | DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_TP1 | DP_SRCCTRL_LANESKEW |
                                 DP_SRCCTRL_LANES_2 | MPD_BW | DP_SRCCTRL_AUTOCORRECT);
+
+                                     
 #else
     MPD_WriteAUXI(1, DPCD_TRAINING_SET, MPD_SWG);  //DP PHY Signal
     IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) |
@@ -194,6 +196,8 @@ int MPD_CfgLink(){
                                 DP_SRCCTRL_TP1 | DP_SRCCTRL_LANESKEW |
                                 MPD_BW | DP_SRCCTRL_AUTOCORRECT);
 #endif
+
+    //Start Link Training
     IIC_WriteRegI(DP0CTL, EF_EN | DP_EN);   //DP0Ctl, Enable Output
     do {
         TIM_Delay_Us(1000);
@@ -222,6 +226,8 @@ int MPD_CfgLink(){
                                 DP_SRCCTRL_TP2 | DP_SRCCTRL_LANESKEW |
                                 MPD_BW | DP_SRCCTRL_AUTOCORRECT);
 #endif
+
+    //Start Link Training
     do {
         TIM_Delay_Us(1000);
         IIC_ReadReg(DP0_LTSTAT, &result, 4);
@@ -231,16 +237,6 @@ int MPD_CfgLink(){
     printf("Pattern 2:\r\n");
     printf("code: 0x%02x\r\n", code);
     printf("status: 0x%02x\r\n", status);
-
-    //LT Status
-    uint32_t symbol, request = 0;
-    MPD_ReadAux(4, DPCD_LANE_STATUS, &result);
-    MPD_ReadAux(1, DPCD_ADJUST_REQUEST, &request);
-    MPD_ReadAux(4, DPCD_SYMBOL_ERR_CNT, &symbol);
-    printf("Sink LT Status:\r\n");
-    printf("code: 0x%08x\r\n", result);
-    printf("request: 0x%02x\r\n", request);
-    printf("symbol_err: 0x%08x\r\n", symbol);
     
     //Clean LT
 #ifdef MPD_2LANE
@@ -256,7 +252,15 @@ int MPD_CfgLink(){
                                 MPD_BW | DP_SRCCTRL_AUTOCORRECT);
 #endif
     MPD_WriteAUXI(1, DPCD_TRAINING_PATTERN_SET, 0x00);  //Clean DPCD LT Pattern
-    
+
+    //LT Status
+    printf("Sink LT Status:\r\n");
+    printf("code: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_LANE_STATUS));
+    printf("align: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_LANE_ALIGN_STATUS));
+    printf("sink: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_SINK_STATUS));
+    printf("request: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_ADJUST_REQUEST));
+    printf("errsym: 0x%08x\r\n", MPD_ReadAuxI(4, DPCD_SYMBOL_ERR_CNT));
+
     MPD_WriteAUXI(1, DPCD_EDP_CONFIGURATION_SET, 0x02); //Set No-ASSR and Enhanced Framing
     MPD_WriteAUXI(1, DPCD_DOWNSPREAD_CTRL, 0x00);    //Set SSCG
 
@@ -309,46 +313,44 @@ void MPD_Test_EDID(uint32_t data[64]){
     return;
 }
 
-void MPD_CfgVideo(){
-    uint32_t pm = MPD_ReadAuxI(1, 0x00600);
-    printf("dp_sink_pm: 0x%02x\r\n", pm);
-    uint32_t cap = MPD_ReadAuxI(1, 0x00005);
-    printf("dp_sink_type: 0x%02x\r\n", cap);
-
+void MPD_CfgStream(){
     uint32_t edid[64]; //256bytes
     if(!MPD_ReadEDID(edid, 256)) {
         MPD_Test_EDID(edid);
     }
 
-    IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_ENABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
+#ifdef MPD_TEST
+    IIC_WriteRegI(PXL_PLLCTRL, PLLBYP | PLLEN); //FIXME
+    IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
+    IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);   //Enable PXL PLL
+    TIM_Delay_Ms(10);
+    IIC_WriteRegI(TSTCTL, ENI2CFILTER | MPD_TEST_MODE | (MPD_TEST_COLOR << 8));
+#else
+    IIC_WriteRegI(TSTCTL, ENI2CFILTER | (MPD_TEST_COLOR << 8));
+#endif
+
+    IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_DISABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
 
     IIC_WriteReg(VP_TIM, (void*)rgb_timing, 16);
-    IIC_WriteRegI(VFUEN0, 0x01);    //Commit Timing Variable
-    IIC_WriteRegI(DPIPXLFMT, MPD_DPI_POL | MPD_DPI_FMT | MPD_DPI_BPP);
+    IIC_WriteRegI(VFUEN0, VFUEN);    //Commit Timing Variable
 
     IIC_WriteReg(DP0_TIM, (void*)dp_timing, 20);
-    IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(42) | TU_SIZE(63) | BPC | FMT_RGB);  //DP0_Misc
-    return;
-}
+    IIC_WriteRegI(DPIPXLFMT, MPD_DPI_POL | MPD_DPI_FMT | MPD_DPI_BPP);
 
-void MPD_CfgTest(){
-#ifdef MPD_TEST
-    printf("Enable Test Transmition\r\n");
-#else
-    printf("Enable Video Transmition\r\n");
-#endif
-    IIC_WriteRegI(TSTCTL, ENI2CFILTER | MPD_TEST_MODE | (MPD_TEST_COLOR << 8));
+    IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(MPD_MAX_TU_SYMBOL) | TU_SIZE(MPD_TU_SIZE_RECOMMENDED) | BPC | FMT_RGB);  //DP0_Misc
     IIC_WriteRegI(DP0_VIDMNGEN1, MPD_DP_VIDGEN_N);
 
     IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | DP_EN);
+    TIM_Delay_Us(500);
     IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | VID_EN | DP_EN);
-#ifdef MPD_TEST
-    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_COLOR_BAR); //SYSCTRL, Set DP Video Source
-#else
-    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_DPI_RX); //SYSCTRL, Set DP Video Source
-#endif
-    TIM_Delay_Ms(100);
 
+#ifdef MPD_TEST
+    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_COLOR_BAR);
+#else
+    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_DPI_RX);
+#endif
+
+    TIM_Delay_Ms(100);
     printf("vid_M: %d\r\n", IIC_ReadRegI(DP0_VMNGENSTATUS, 4));
     printf("vid_N: %d\r\n", IIC_ReadRegI(DP0_VIDMNGEN1, 4));
     printf("vfuen: %d\r\n", IIC_ReadRegI(VFUEN0, 4));
@@ -356,13 +358,8 @@ void MPD_CfgTest(){
 }
 
 void MPD_Disable(){
+	IIC_WriteRegI(DP0_SRCCTRL, 0);
     IIC_WriteRegI(DP0CTL, 0);
-#ifdef MPD_2LANE
-    uint32_t dp_phy_ctrl = BGREN | PWR_SW_EN | PHY_2LANE | PHY_A0_EN | PHY_M0_EN;
-#else
-    uint32_t dp_phy_ctrl = BGREN | PWR_SW_EN | PHY_A0_EN | PHY_M0_EN;
-#endif
-    IIC_WriteRegI(DP_PHY_CTRL, dp_phy_ctrl | DP_PHY_RST | PHY_M0_RST | PHY_M1_RST);
-    IIC_WriteRegI(DP_PHY_CTRL, dp_phy_ctrl);
+    IIC_WriteRegI(DP_PHY_CTRL, DP_PHY_CTRL_EN | PHY_M0_RST | PHY_M1_RST);
     return;
 }
