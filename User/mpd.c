@@ -318,7 +318,7 @@ void MPD_CfgStream(){
     }
 
 #ifdef MPD_TEST
-    IIC_WriteRegI(PXL_PLLCTRL, PLLBYP); //FIXME
+    IIC_WriteRegI(PXL_PLLCTRL, PLLBYP | PLLEN);
     IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
     IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);   //Enable PXL PLL
     TIM_Delay_Ms(10);
@@ -351,7 +351,6 @@ void MPD_CfgStream(){
     TIM_Delay_Ms(100);
     printf("vid_M: %d\r\n", IIC_ReadRegI(DP0_VMNGENSTATUS, 4));
     printf("vid_N: %d\r\n", IIC_ReadRegI(DP0_VIDMNGEN1, 4));
-    printf("vfuen: %d\r\n", IIC_ReadRegI(VFUEN0, 4));
     return;
 }
 

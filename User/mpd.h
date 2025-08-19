@@ -15,7 +15,7 @@
 #define MPD_TEST_COLOR  0x114514
 #define MPD_TEST_MODE   COLOR_CHECKER
 
-#define MPD_PXLPARAM    0x01130111  //FIXME: Pixel PLL input freq out of range
+#define MPD_PXLPARAM    0x01130111
 
 //Video Format
 #define MPD_DP_BPP      OPXLFMT_RGB888
@@ -24,7 +24,7 @@
 #define MPD_DPI_BPP     DPI_BPP_RGB888
 
 //Timing Variable
-#define MPD_VSDELAY         0       //FIXME
+#define MPD_VSDELAY         0
 #define MPD_DP_VIDGEN_N     32768
 
 #define MPD_HPW         44
