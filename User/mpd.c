@@ -237,6 +237,7 @@ int MPD_CfgLink(){
     printf("status: 0x%02x\r\n", status);
     
     //Clean LT
+    MPD_WriteAUXI(1, DPCD_TRAINING_PATTERN_SET, 0x00);  //Clean DPCD LT Pattern
 #ifdef MPD_2LANE
     IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
                                 DP_SRCCTRL_SWG1(MPD_SWG) | DP_SRCCTRL_PRE1(MPD_PRE) |
@@ -249,7 +250,6 @@ int MPD_CfgLink(){
                                 DP_SRCCTRL_NOTP | DP_SRCCTRL_LANESKEW |
                                 MPD_BW | DP_SRCCTRL_AUTOCORRECT);
 #endif
-    MPD_WriteAUXI(1, DPCD_TRAINING_PATTERN_SET, 0x00);  //Clean DPCD LT Pattern
 
     //LT Status
     printf("Sink LT Status:\r\n");
@@ -258,9 +258,6 @@ int MPD_CfgLink(){
     printf("sink: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_SINK_STATUS));
     printf("request: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_ADJUST_REQUEST));
     printf("errsym: 0x%08x\r\n", MPD_ReadAuxI(4, DPCD_SYMBOL_ERR_CNT));
-
-    MPD_WriteAUXI(1, DPCD_EDP_CONFIGURATION_SET, 0x02); //Set No-ASSR and Enhanced Framing
-    MPD_WriteAUXI(1, DPCD_DOWNSPREAD_CTRL, 0x00);    //Set SSCG
 
     return 0;
 }
@@ -338,19 +335,28 @@ void MPD_CfgStream(){
     IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(MPD_MAX_TU_SYMBOL) | TU_SIZE(MPD_TU_SIZE_RECOMMENDED) | BPC | FMT_RGB);  //DP0_Misc
     IIC_WriteRegI(DP0_VIDMNGEN1, MPD_DP_VIDGEN_N);
 
-    IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | DP_EN);
-    TIM_Delay_Us(500);
-    IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | VID_EN | DP_EN);
-
 #ifdef MPD_TEST
     IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_COLOR_BAR);
 #else
     IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_DPI_RX);
 #endif
 
+    IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | DP_EN);
+    TIM_Delay_Us(500);
+    IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | VID_EN | DP_EN);
+
     TIM_Delay_Ms(100);
     printf("vid_M: %d\r\n", IIC_ReadRegI(DP0_VMNGENSTATUS, 4));
     printf("vid_N: %d\r\n", IIC_ReadRegI(DP0_VIDMNGEN1, 4));
+
+    //LT Status
+    printf("Sink LT Status:\r\n");
+    printf("code: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_LANE_STATUS));
+    printf("align: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_LANE_ALIGN_STATUS));
+    printf("sink: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_SINK_STATUS));
+    printf("request: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_ADJUST_REQUEST));
+    printf("errsym: 0x%08x\r\n", MPD_ReadAuxI(4, DPCD_SYMBOL_ERR_CNT));
+    
     return;
 }
 
