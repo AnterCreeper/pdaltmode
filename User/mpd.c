@@ -58,11 +58,9 @@ void MPD_Init(){ //Mobile Peripheral Devices
     TIM_Delay_Ms(10);
     printf("Reset MPD\r\n");
 
-    uint32_t id = 0, pin = 0;
-    IIC_ReadReg(TC_IDREG, &id, 2);
-    IIC_ReadReg(SYSSTAT, &pin, 1);
-    printf("mpd_id: 0x%04x\r\n", id);
-    printf("mpd_pin: 0x%02x\r\n", pin);
+    printf("mpd_id: 0x%04x\r\n", IIC_ReadRegI(TC_IDREG, 2));
+    printf("mpd_pin: 0x%02x\r\n", IIC_ReadRegI(SYSSTAT, 1));
+    printf("mpd_boot: 0x%01x\r\n", IIC_ReadRegI(SYSBOOT, 1));
 
 #ifdef MPD_2LANE
     IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
@@ -320,7 +318,7 @@ void MPD_CfgStream(){
     }
 
 #ifdef MPD_TEST
-    IIC_WriteRegI(PXL_PLLCTRL, PLLBYP | PLLEN); //FIXME
+    IIC_WriteRegI(PXL_PLLCTRL, PLLBYP); //FIXME
     IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
     IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);   //Enable PXL PLL
     TIM_Delay_Ms(10);
@@ -329,7 +327,7 @@ void MPD_CfgStream(){
     IIC_WriteRegI(TSTCTL, ENI2CFILTER | (MPD_TEST_COLOR << 8));
 #endif
 
-    IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_DISABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
+    IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_ENABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
 
     IIC_WriteReg(VP_TIM, (void*)rgb_timing, 16);
     IIC_WriteRegI(VFUEN0, VFUEN);    //Commit Timing Variable

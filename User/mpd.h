@@ -15,7 +15,7 @@
 #define MPD_TEST_COLOR  0x114514
 #define MPD_TEST_MODE   COLOR_CHECKER
 
-#define MPD_PXLPARAM    0x00120539  //FIXME: Pixel PLL input freq out of range
+#define MPD_PXLPARAM    0x01130111  //FIXME: Pixel PLL input freq out of range
 
 //Video Format
 #define MPD_DP_BPP      OPXLFMT_RGB888
@@ -52,7 +52,7 @@ static const uint16_t rgb_timing[8] = {
 };
 
 //DP0_VidSyncDly, DP0_TotalVal, DP0_StartVal, DP0_ActiveVal, DP0_SyncVal
-const uint16_t dp_timing[10] = {
+static const uint16_t dp_timing[10] = {
     MPD_HPW + MPD_HBPR + MPD_Hactive, //vid_sync_dly
     MPD_MAX_TU_SYMBOL,
     MPD_HPW + MPD_HBPR + MPD_Hactive + MPD_HFPR, //h_total
