@@ -7,13 +7,13 @@
 #define MPD_REFCLK      REF_FREQ_26M
 
 #define MPD_BW          DP_SRCCTRL_BW27
-#define MPD_SWG         DP_SWG_0P8
+#define MPD_SWG         DP_SWG_0P4
 #define MPD_PRE         DP_PRE_0
 #define MPD_2LANE
 
-#define MPD_TEST
+//#define MPD_TEST
 #define MPD_TEST_COLOR  0x114514
-#define MPD_TEST_MODE   COLOR_CHECKER
+#define MPD_TEST_MODE   COLOR_BAR
 
 #define MPD_PXLPARAM    0x01130111
 
@@ -24,9 +24,6 @@
 #define MPD_DPI_BPP     DPI_BPP_RGB888
 
 //Timing Variable
-#define MPD_VSDELAY         0
-#define MPD_DP_VIDGEN_N     32768
-
 #define MPD_HPW         44
 #define MPD_HBPR        148
 #define MPD_Hactive     1920
@@ -36,7 +33,7 @@
 #define MPD_Vactive     1080
 #define MPD_VFPR        4
 
-#define MPD_MAX_TU_SYMBOL           42  //DIV_ROUND_UP(in_bw * TU_SIZE_RECOMMENDED, out_bw)
+#define MPD_MAX_TU_SYMBOL           42  //DIV_ROUND_UP(in_bw * TU_SIZE_RECOMMENDED, out_bw), in_bw=148.5MHz*3B, out_bw=2*2700Mbps/8bpB
 #define MPD_TU_SIZE_RECOMMENDED     63
 
 //HTIM01, HTIM02, VTIM01, VTIM02
@@ -202,6 +199,12 @@ static const uint16_t dp_timing[10] = {
 #define DP_SRCCTRL_BW162		(0 << 1)
 #define DP_SRCCTRL_AUTOCORRECT	BIT(0)
 
+#ifdef MPD_2LANE
+#define DP_SRCCTRL_LANES    DP_SRCCTRL_LANES_2
+#else
+#define DP_SRCCTRL_LANES    DP_SRCCTRL_LANES_1
+#endif
+
 #define DP_PHY_CTRL		0x0800
 #define DP_PHY_RST		BIT(28)     /* DP PHY Global Soft Reset */
 #define BGREN			BIT(25)     /* AUX PHY BGR Enable */
@@ -262,9 +265,13 @@ static const uint16_t dp_timing[10] = {
 #define DPCD_ENHANCED_FRAME_EN      BIT(15)
 #define DPCD_LANES(x)   ((x) << 8)
 
+#define MPD_VSDELAY         MPD_HFPR + 10
+#define MPD_DP_VIDGEN_N     32768   //refer to DP spec, using async mode
+
 void MPD_Init();
 int MPD_CfgLink();
 void MPD_CfgStream();
+void MPD_HPD_IRQ();
 void MPD_Disable();
 
 #endif

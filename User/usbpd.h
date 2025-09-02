@@ -30,7 +30,8 @@ typedef enum {
     STA_ENTER_MODE,
     STA_DP_S_UPDATE,
     STA_DP_CONFIG,
-    STA_MPD_CONFIG,
+    STA_MPD_HPD,
+    STA_MPD_IRQ
 } VDM_STATUS;
 
 typedef enum {
@@ -53,8 +54,8 @@ typedef struct DP_STATUS {
     uint8_t Enabled;
     uint8_t DFP_Pin;
     uint8_t UFP_Pin;
-    uint32_t Link;
-    uint8_t LT; //If Link Trained
+    uint32_t Link; //Type-C Link Status
+    uint8_t Trained; //If Link Trained
     uint8_t Receptable;
 } dp_status_t;
 

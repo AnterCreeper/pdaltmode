@@ -136,7 +136,7 @@ void PD_FSM_Reset(pd_state_t* PD_Ctl) {
     PD_Ctl->DP_Status.Pos = 0;
     PD_Ctl->DP_Status.Link = 0;
     PD_Ctl->DP_Status.Enabled = DISABLE;
-    PD_Ctl->DP_Status.LT = 0;
+    PD_Ctl->DP_Status.Trained = 0;
     return;
 }
 
@@ -227,7 +227,7 @@ static void PD_Load_DataObj(void* data, size_t len, pd_state_t* PD_Ctl) {
     return;
 }
 
-static void PD_Load_VDM(uint16_t svid, int cmd, void* buf, struct PD_FSM* PD_Ctl) {
+static void PD_Load_VDM(uint16_t svid, int cmd, void* buf, pd_state_t* PD_Ctl) {
     //see description above.
     uint32_t data = cmd & 0x1F;
     data |= DEF_CMDTYPE_INIT << 6;
@@ -237,25 +237,33 @@ static void PD_Load_VDM(uint16_t svid, int cmd, void* buf, struct PD_FSM* PD_Ctl
     return;
 }
 
-static void PD_Load_VDM_POS(uint8_t pos, void* buf, struct PD_FSM* PD_Ctl) {
+static void PD_Load_VDM_POS(uint8_t pos, void* buf, pd_state_t* PD_Ctl) {
     if(!pos) assert("Empty VDO Pos");
     ((uint32_t*)buf)[0] |= pos << 8;
     return;
 }
 
-static void PD_Load_VDM_CMDTYPE(uint8_t cmdtype, void* buf, struct PD_FSM* PD_Ctl) {
+static void PD_Load_VDM_CMDTYPE(uint8_t cmdtype, void* buf, pd_state_t* PD_Ctl) {
     ((uint32_t*)buf)[0] |= cmdtype << 6;
     return;
 }
 
-static void PD_Load_VDM_DP_S(void* buf, struct PD_FSM* PD_Ctl) {
+static void PD_Load_VDM_DP_S(void* buf, pd_state_t* PD_Ctl) {
     //see description above.
     uint32_t data = 0x1;
     ((uint32_t*)buf)[1] = data;
     return;
 }
 
-static void PD_Load_VDM_DP_CFG(void* buf, struct PD_FSM* PD_Ctl) {
+int PD_DP_Pin_Decider(dp_status_t info) {
+    int mode = info.Receptable ? info.UFP_Pin : info.DFP_Pin;
+    printf("assign: 0x%02x\r\n", mode);
+    if(mode & BIT(2)) return BIT(2); //Assignment C
+    if(mode & BIT(4)) return BIT(4); //Assignment E
+    return BIT(2);
+}
+
+static void PD_Load_VDM_DP_CFG(void* buf, pd_state_t* PD_Ctl) {
     /* DisplayPort Capability
         BIT[31:16] - Reserved
         BIT[15:8] - Configure UFP_U Pin Assignment
@@ -276,11 +284,8 @@ static void PD_Load_VDM_DP_CFG(void* buf, struct PD_FSM* PD_Ctl) {
             10 = Set configuration for UFP_U as UFP_D
             11 = Reserved
     */
-    uint32_t data = 0x2 | (0x1 << 2); //Set UFP_U as UFP_D and Enable DP1.3 Signaling
-    //int pin = PD_Ctl->DP_Status.Receptable ? PD_Ctl->DP_Status.UFP_Pin : PD_Ctl->DP_Status.DFP_Pin;
-    //TODO
     GPIO_Toggle_DPSEL(FLIP_SEL);
-    data |= 0x4 << 8;
+    uint32_t data = 0x2 | (0x1 << 2) | (PD_DP_Pin_Decider(PD_Ctl->DP_Status) << 8); //Set UFP_U as UFP_D and Enable DP1.3 Signaling
     ((uint32_t*)buf)[1] = data;
     return;
 }
@@ -585,8 +590,8 @@ static int PD_Test_MODE(pd_state_t* PD_Ctl) {
         printf("MODE %d:\r\n", i + 1);
         /* PD_PARSE_DP_CAP
             00 = Reserved
-            01 = UFP_D capable (including Branch Device)
-            10 = DFP_D capable (including Branch Device)
+            01 = UFP_D(DP Sink Device) capable, including Branch Device
+            10 = DFP_D(DP Source Device) capable, including Branch Device
             11 = Both DFP_D and UFP_D capable
         */
         printf("capability: %d\r\n", PD_PARSE_DP_CAP(mode[i]));
@@ -644,12 +649,18 @@ int PD_Listen_Ready(size_t len, pd_state_t* PD_Ctl) {
             int new_enabled = PD_Test_DP_S(PD_Ctl) == 0;
             //transition
             if(PD_Ctl->DP_Status.Enabled != new_enabled) {
-                if(new_enabled && !PD_Ctl->DP_Status.LT) PD_Ctl->VDM_Status = STA_DP_CONFIG;
+                if(new_enabled && !PD_Ctl->DP_Status.Trained) PD_Ctl->VDM_Status = STA_DP_CONFIG;
                 PD_Ctl->DP_Status.Enabled = new_enabled;
                 return -1;
             }
             //hot-plug detect
-            if(PD_PARSE_DP_HPD(PD_Ctl->DP_Status.Link)) PD_Ctl->VDM_Status = STA_MPD_CONFIG;
+            if(PD_PARSE_DP_HPD(PD_Ctl->DP_Status.Link)) PD_Ctl->VDM_Status = STA_MPD_HPD;
+            else {
+                MPD_Disable();
+                PD_Ctl->DP_Status.Trained = 0;
+            }
+            //irq detect
+            if(PD_PARSE_DP_IRQ(PD_Ctl->DP_Status.Link)) PD_Ctl->VDM_Status = STA_MPD_IRQ;
         } else {
             PD_Load_VDM_CMDTYPE(DEF_CMDTYPE_NAK, buf, PD_Ctl);
             if(PD_Send_Retry_Rst(DEF_TYPE_VENDOR_DEFINED, buf, 4, PD_Ctl)) return -1;
@@ -740,14 +751,15 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
         if(PD_SendRecv_VDM(DEF_VDM_DP_CONFIG, 30, buf, 8, PD_Ctl)) break;
         GPIO_Toggle_DPSIG(SET); //Configure DP Signal and SBU Mux
 #ifdef IGNORE_HPD
-        PD_Ctl->VDM_Status = STA_MPD_CONFIG;
+        PD_Ctl->VDM_Status = STA_MPD_HPD;
 #else
-        PD_Ctl->VDM_Status = PD_PARSE_DP_HPD(PD_Ctl->DP_Status.Link) ? STA_MPD_CONFIG : STA_VDM_IDLE;
+        PD_Ctl->VDM_Status = PD_PARSE_DP_HPD(PD_Ctl->DP_Status.Link) ? STA_MPD_HPD : STA_VDM_IDLE;
 #endif
         break;
-    case STA_MPD_CONFIG:
+    case STA_MPD_HPD:
 #ifndef IGNORE_HPD
-        if(PD_Ctl->DP_Status.LT) {
+        if(PD_Ctl->DP_Status.Trained) {
+            printf("ignore hpd event, link is already established.\r\n");
             PD_Ctl->VDM_Status = STA_VDM_IDLE;
             break;
         }
@@ -757,13 +769,17 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
         if(!MPD_CfgLink()) {
             MPD_CfgStream();
             WS2812_SetColor(BLUE);
-            PD_Ctl->DP_Status.LT = 1;
+            PD_Ctl->DP_Status.Trained = 1;
         } else {
             WS2812_SetColor(YELLOW);
-            PD_Ctl->DP_Status.LT = 0;
+            PD_Ctl->DP_Status.Trained = 0;
         }
 #endif
         PD_Exit_ListenMode(PD_Ctl);
+        PD_Ctl->VDM_Status = STA_VDM_IDLE;
+        break;
+    case STA_MPD_IRQ:
+        MPD_HPD_IRQ();
         PD_Ctl->VDM_Status = STA_VDM_IDLE;
         break;
     case STA_VDM_IDLE:
