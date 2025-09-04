@@ -43,9 +43,9 @@ void MPD_IRQInit() {
     NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 7;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
+    NVIC_EnableIRQ(EXTI7_0_IRQn);
     IIC_WriteRegI(INTCTL_G, INT_SYSERR);   //Enable MPD INT_SYSERR
     return;
 }
@@ -54,7 +54,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     GPIO_OUT_INIT(GPIOB, GPIO_Pin_1, Bit_SET);    //MCU_DP_RST#
     TIM_Delay_Us(1000);   //Tcorerdy
-    GPIO_IPD_INIT(GPIOB, GPIO_Pin_0);   //MCU_DP_INT
+    GPIO_IPU_INIT(GPIOB, GPIO_Pin_0);   //MCU_DP_INT, need internal pull up for level shift.
 
     IIC_WriteRegI(SYSRSTENB, ENBI2C);
     IIC_WriteRegI(SYSRSTENB, ENBLCD0 | ENBBM | ENBDSIRX | ENBREG | ENBHDCP | ENBI2C);
@@ -66,6 +66,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
     printf("mpd_boot: 0x%01x\r\n", IIC_ReadRegI(SYSBOOT, 1));
 
     IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
+                                DP_SRCCTRL_SWG1(MPD_SWG) | DP_SRCCTRL_PRE1(MPD_PRE) |
                                 DP_SRCCTRL_SCRMBLDIS | DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_NOTP | DP_SRCCTRL_LANESKEW |
                                 DP_SRCCTRL_LANES | MPD_BW | DP_SRCCTRL_AUTOCORRECT);
@@ -73,7 +74,7 @@ void MPD_Init(){ //Mobile Peripheral Devices
                                 DP_SRCCTRL_SCRMBLDIS | DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_NOTP | MPD_BW);
 
-    IIC_WriteRegI(SYS_PLLPARAM, MPD_REFCLK | LSCLK_DIV_2);
+    IIC_WriteRegI(SYS_PLLPARAM, MPD_REFCLK | LSCLK_DIV_1);
 
     MPD_IRQInit();
     printf("MPD Ready\r\n");
@@ -172,7 +173,7 @@ int MPD_CfgLink(){
         BIT[23:16] - Reserved
         BIT[15:0] - LoopTimer
     */
-    IIC_WriteRegI(DP0_LTLOOPCTRL, 0xFF00000D);
+    IIC_WriteRegI(DP0_LTLOOPCTRL, 0xFF00000D);  
 
     //Pattern 1
     IIC_WriteRegI(DP0_SNKLTCTRL, DPCD_SCRAMBLING_DISABLE | DPCD_TRAINING_PATTERN_1);
@@ -181,7 +182,7 @@ int MPD_CfgLink(){
 #else
     MPD_WriteAUXI(1, DPCD_TRAINING_SET, MPD_SWG);  //DP PHY Signal
 #endif
-    IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) |
+    IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_SWG1(MPD_SWG) |
                                 DP_SRCCTRL_SCRMBLDIS | DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_TP1 | DP_SRCCTRL_LANESKEW |
                                 DP_SRCCTRL_LANES | MPD_BW | DP_SRCCTRL_AUTOCORRECT);
@@ -203,7 +204,14 @@ int MPD_CfgLink(){
 
     //Pattern 2
     IIC_WriteRegI(DP0_SNKLTCTRL, DPCD_SCRAMBLING_DISABLE | DPCD_TRAINING_PATTERN_2);
+#ifdef MPD_2LANE
+    MPD_WriteAUXI(2, DPCD_TRAINING_SET, (MPD_PRE << 11) | (MPD_SWG << 8) |
+                                (MPD_PRE << 3) | MPD_SWG);  //DP PHY Signal
+#else
+    MPD_WriteAUXI(1, DPCD_TRAINING_SET, (MPD_PRE << 3) | MPD_SWG);  //DP PHY Signal
+#endif
     IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
+                                DP_SRCCTRL_SWG1(MPD_SWG) | DP_SRCCTRL_PRE1(MPD_PRE) |
                                 DP_SRCCTRL_SCRMBLDIS | DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_TP2 | DP_SRCCTRL_LANESKEW |
                                 DP_SRCCTRL_LANES | MPD_BW | DP_SRCCTRL_AUTOCORRECT);
@@ -221,7 +229,9 @@ int MPD_CfgLink(){
     printf("status: 0x%02x\r\n", status);
     
     //Clean LT
+    //take the order refering from tc358767.c from Linux Kernel
     IIC_WriteRegI(DP0_SRCCTRL, DP_SRCCTRL_SWG0(MPD_SWG) | DP_SRCCTRL_PRE0(MPD_PRE) |
+                                DP_SRCCTRL_SWG1(MPD_SWG) | DP_SRCCTRL_PRE1(MPD_PRE) |
                                 DP_SRCCTRL_EN810B |
                                 DP_SRCCTRL_NOTP | DP_SRCCTRL_LANESKEW |
                                 DP_SRCCTRL_LANES | MPD_BW | DP_SRCCTRL_AUTOCORRECT);
@@ -284,56 +294,83 @@ void MPD_Test_EDID(uint32_t data[64]){
 }
 
 void MPD_CfgStream(){
+    printf("Get Screen EDID\r\n");
     uint32_t edid[64]; //256bytes
     if(!MPD_ReadEDID(edid, 256)) {
         MPD_Test_EDID(edid);
     }
 
+    printf("Configure DP Stream\r\n");
 #ifdef MPD_TEST
+    printf("Configure MPD Test Pixel PLL\r\n");
     IIC_WriteRegI(PXL_PLLCTRL, PLLBYP | PLLEN);
     IIC_WriteRegI(PXL_PLLPARAM, IN_SEL_REFCLK | MPD_PXLPARAM);  //Set PXLPLL
     IIC_WriteRegI(PXL_PLLCTRL, PLLUPDATE | PLLEN);   //Enable PXL PLL
     TIM_Delay_Ms(10);
+#endif
     IIC_WriteRegI(TSTCTL, ENI2CFILTER | MPD_TEST_MODE | (MPD_TEST_COLOR << 8));
     IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_ENABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
-#else
-    IIC_WriteRegI(TSTCTL, ENI2CFILTER | (MPD_TEST_COLOR << 8));
-    IIC_WriteRegI(VPCTRL0, MPD_DP_BPP | FRMSYNC_ENABLED | MSF_DISABLED | VSDELAY(MPD_VSDELAY));
-#endif
 
     IIC_WriteReg(VP_TIM, (void*)rgb_timing, 16);
     IIC_WriteRegI(VFUEN0, VFUEN);    //Commit Timing Variable
     IIC_WriteReg(DP0_TIM, (void*)dp_timing, 20);
 
     IIC_WriteRegI(DPIPXLFMT, MPD_DPI_POL | MPD_DPI_FMT | MPD_DPI_BPP);
+    //FIXME
     IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(MPD_MAX_TU_SYMBOL) | TU_SIZE(MPD_TU_SIZE_RECOMMENDED) | BPC | FMT_YUV422 | BIT(3) | BIT(4));  //DP0_Misc
     IIC_WriteRegI(DP0_VIDMNGEN1, MPD_DP_VIDGEN_N);
 
+#ifdef MPD_AUDIO
+    printf("Configure MPD Audio\r\n");
+    IIC_WriteRegI(AUDCFG0, AUD_STEREO | AUD_PKT_ID);
+    IIC_WriteRegI(AUDCFG1, AUD_IF_TYPE);
+    IIC_WriteRegI(AUDIFDATA0, (AUD_CA << 24) | (AUD_CXT << 16) | (AUD_SF << 10) | (AUD_SS << 8) | (AUD_CT << 4) | AUD_CC);    //refer to DP v1.2 and CEA 861-E.
+    IIC_WriteRegI(AUDIFDATA1, (AUD_DM_IF << 7) | (AUD_LSV << 3) | AUD_LFEPBL);
+
+    IIC_WriteRegI(DP0_AUDMNGEN0, AUD_M);
+    IIC_WriteRegI(DP0_AUDMNGEN1, AUD_N);
+
+    IIC_WriteRegI(DP0_SECSAMPLE, (AUD_MAX_VSAMPLE << 16) | AUD_MAX_HSAMPLE);
+
+    IIC_WriteRegI(I2SCFG, I2S_AUD_EN | I2S_IEC60958_EN | I2S_IEC60958_VALID | I2S_SAMPLE_WITDH | I2S_SAMPLE_FMT);
+    //Refer to header file for more information.
+    //SPDIF headers.
+    IIC_WriteRegI(I2SCH0STAT0, IEC60958_DATA0 | IEC60958_CHAN_L);
+    IIC_WriteRegI(I2SCH0STAT1, IEC60958_DATA1);
+    IIC_WriteRegI(I2SCH1STAT0, IEC60958_DATA0 | IEC60958_CHAN_R);
+    IIC_WriteRegI(I2SCH1STAT1, IEC60958_DATA1);
+#endif
+
 #ifdef MPD_TEST
-    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_COLOR_BAR);
+    IIC_WriteRegI(SYSCTRL, MPD_AUDSRC | DP0_VIDSRC_COLOR_BAR);
 #else
-    IIC_WriteRegI(SYSCTRL, DP0_AUDSRC_NO_INPUT | DP0_VIDSRC_DPI_RX);
+    IIC_WriteRegI(SYSCTRL, MPD_AUDSRC | DP0_VIDSRC_DPI_RX);
 #endif
 
     IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | DP_EN);
     TIM_Delay_Us(500);
+#ifdef MPD_AUDIO
+    IIC_WriteRegI(DP0CTL, VID_MN_GEN | AUD_MN_GEN | EF_EN | VID_EN | AUD_EN | DP_EN);
+#else
     IIC_WriteRegI(DP0CTL, VID_MN_GEN | EF_EN | VID_EN | DP_EN);
-
+#endif
     TIM_Delay_Ms(500);
     printf("vid_M: %d\r\n", IIC_ReadRegI(DP0_VMNGENSTATUS, 4));
     printf("vid_N: %d\r\n", IIC_ReadRegI(DP0_VIDMNGEN1, 4));
+    printf("aud_M: %d\r\n", IIC_ReadRegI(DP0_AMNGENSTATUS, 4));
+    printf("aud_N: %d\r\n", IIC_ReadRegI(DP0_AUDMNGEN1, 4));
 
     printf("mpd_stat: 0x%04x\r\n", IIC_ReadRegI(SYSSTAT, 4));
     return;
 }
 
 void MPD_Disable(){
+    printf("Disable MPD Link\r\n");
+    IIC_WriteRegI(DP0CTL, 0);
+    IIC_WriteRegI(I2SCFG, 0);
 #ifdef MPD_TEST
-    IIC_WriteRegI(DP0CTL, IIC_ReadRegI(DP0CTL, 4) & ~(VID_EN));
     IIC_WriteRegI(PXL_PLLCTRL, PLLBYP);
 #endif
-    printf("Disable MPD Func\r\n");
-    IIC_WriteRegI(DP0CTL, 0);
     IIC_WriteRegI(DP_PHY_CTRL, (DP_PHY_CTRL_EN | PHY_M0_RST | PHY_M1_RST) & (~PHY_M0_EN));
     return;
 }
@@ -345,5 +382,15 @@ void MPD_HPD_IRQ(){
     printf("00205h sink: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_SINK_STATUS));
     printf("00206h request: 0x%02x\r\n", MPD_ReadAuxI(1, DPCD_ADJUST_REQUEST));
     printf("00210h errsym: 0x%08x\r\n", MPD_ReadAuxI(4, DPCD_SYMBOL_ERR_CNT));
+    return;
+}
+
+void MPD_Mute(){
+    IIC_WriteRegI(AUDCFG0, AUD_MUTE | AUD_STEREO | AUD_PKT_ID);
+    return;
+}
+
+void MPD_Unmute(){
+    IIC_WriteRegI(AUDCFG0, AUD_STEREO | AUD_PKT_ID);
     return;
 }

@@ -5,12 +5,12 @@
 			"type": "mrs-debugger",
 			"request": "launch",
 			"name": "pdaltmode",
-			"cwd": "/Users/wangz/pdaltmode",
+			"cwd": "/home/hp/pdaltmode",
 			"openOCDCfg": {
 				"useLocalOpenOCD": true,
-				"executable": "/Applications/MounRiver Studio 2.app/Contents/Resources/app/resources/darwin/components/WCH/OpenOCD/OpenOCD/bin/openocd",
+				"executable": "/usr/share/MRS2/MRS-linux-x64/resources/app/resources/linux/components/WCH/OpenOCD/OpenOCD/bin/openocd",
 				"configOptions": [
-					"-f \"/Applications/MounRiver Studio 2.app/Contents/Resources/app/resources/darwin/components/WCH/OpenOCD/OpenOCD/bin/wch-riscv.cfg\" -c \"chip_id CH32X035\""
+					"-f \"/usr/share/MRS2/MRS-linux-x64/resources/app/resources/linux/components/WCH/OpenOCD/OpenOCD/bin/wch-riscv.cfg\" -c \"chip_id CH32X035\""
 				],
 				"gdbport": 3333,
 				"telnetport": 4444,
@@ -22,7 +22,7 @@
 				"enableNoZeroWaitingAreaFlash": false
 			},
 			"gdbCfg": {
-				"executable": "/Applications/MounRiver Studio 2.app/Contents/Resources/app/resources/darwin/components/WCH/Toolchain/RISC-V Embedded GCC12/bin/riscv-wch-elf-gdb",
+				"executable": "/usr/share/MRS2/MRS-linux-x64/resources/app/resources/linux/components/WCH/Toolchain/RISC-V Embedded GCC12/bin/riscv-wch-elf-gdb",
 				"commands": [
 					"set mem inaccessible-by-default off",
 					"set architecture riscv:rv32",
@@ -39,8 +39,8 @@
 					"additionalCommands": []
 				},
 				"loadedFiles": {
-					"executableFile": "/Users/wangz/pdaltmode/obj/pdaltmode.elf",
-					"symbolFile": "/Users/wangz/pdaltmode/obj/pdaltmode.elf",
+					"executableFile": "/home/hp/pdaltmode/obj/pdaltmode.elf",
+					"symbolFile": "/home/hp/pdaltmode/obj/pdaltmode.elf",
 					"executableFileOffset": 0,
 					"symbolFileOffset": 0
 				},
@@ -54,12 +54,15 @@
 				},
 				"debugInRAM": false
 			},
-			"svdpath": "/Applications/MounRiver Studio 2.app/Contents/Resources/app/resources/darwin/components/WCH/SDK/default/RISC-V/CH32X035/NoneOS/CH32X035xx.svd",
+			"svdpath": "/usr/share/MRS2/MRS-linux-x64/resources/app/resources/linux/components/WCH/SDK/default/RISC-V/CH32X035/NoneOS/CH32X035xx.svd",
 			"output": {
 				"showDebugGDBTrace": true,
 				"saveDebugOutputToFile": false,
 				"showDebugOutputTimestamps": true
-			}
+			},
+			"isDualCoreDebug": false,
+			"dualCoreDebugRole": null,
+			"architecture": "RISC-V"
 		}
 	]
 }

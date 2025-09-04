@@ -1,5 +1,5 @@
 ################################################################################
-# MRS Version: 2.1.0
+# MRS Version: 2.2.0
 # Automatically-generated file. Do not edit!
 ################################################################################
 
@@ -44,7 +44,22 @@ OBJS += \
 ./User/ws2812.o 
 
 
+EXPANDS += \
+./User/ch32x035_it.c.253r.expand \
+./User/gpio.c.253r.expand \
+./User/iic.c.253r.expand \
+./User/iic_dev.c.253r.expand \
+./User/main.c.253r.expand \
+./User/mpd.c.253r.expand \
+./User/sys.c.253r.expand \
+./User/system_ch32x035.c.253r.expand \
+./User/timer.c.253r.expand \
+./User/usbbc.c.253r.expand \
+./User/ws2812.c.253r.expand 
+
+
 
 # Each subdirectory must supply rules for building sources it contributes
 User/%.o: ../User/%.c
-	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -I"/Users/wangz/pdaltmode/Debug" -I"/Users/wangz/pdaltmode/Core" -I"/Users/wangz/pdaltmode/User" -I"/Users/wangz/pdaltmode/Peripheral/inc" -std=gnu99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
+	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -I"/home/hp/pdaltmode/Debug" -I"/home/hp/pdaltmode/Core" -I"/home/hp/pdaltmode/User" -I"/home/hp/pdaltmode/Peripheral/inc" -std=gnu99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
+

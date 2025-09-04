@@ -28,7 +28,7 @@ typedef struct BC_FSM {
 
 void BC_INIT(bc_state_t* BC_Ctl);
 void BC_Connect(bc_state_t* BC_Ctl);
-void BC_Disconnect();
+void BC_Disconnect(bc_state_t* BC_Ctl);
 void BC_Wait(bc_state_t* BC_Ctl);
 
 #endif

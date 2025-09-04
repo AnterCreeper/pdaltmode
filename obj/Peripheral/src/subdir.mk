@@ -1,5 +1,5 @@
 ################################################################################
-# MRS Version: 2.1.0
+# MRS Version: 2.2.0
 # Automatically-generated file. Do not edit!
 ################################################################################
 
@@ -62,7 +62,28 @@ OBJS += \
 ./Peripheral/src/ch32x035_wwdg.o 
 
 
+EXPANDS += \
+./Peripheral/src/ch32x035_adc.c.253r.expand \
+./Peripheral/src/ch32x035_awu.c.253r.expand \
+./Peripheral/src/ch32x035_dbgmcu.c.253r.expand \
+./Peripheral/src/ch32x035_dma.c.253r.expand \
+./Peripheral/src/ch32x035_exti.c.253r.expand \
+./Peripheral/src/ch32x035_flash.c.253r.expand \
+./Peripheral/src/ch32x035_gpio.c.253r.expand \
+./Peripheral/src/ch32x035_i2c.c.253r.expand \
+./Peripheral/src/ch32x035_iwdg.c.253r.expand \
+./Peripheral/src/ch32x035_misc.c.253r.expand \
+./Peripheral/src/ch32x035_opa.c.253r.expand \
+./Peripheral/src/ch32x035_pwr.c.253r.expand \
+./Peripheral/src/ch32x035_rcc.c.253r.expand \
+./Peripheral/src/ch32x035_spi.c.253r.expand \
+./Peripheral/src/ch32x035_tim.c.253r.expand \
+./Peripheral/src/ch32x035_usart.c.253r.expand \
+./Peripheral/src/ch32x035_wwdg.c.253r.expand 
+
+
 
 # Each subdirectory must supply rules for building sources it contributes
 Peripheral/src/%.o: ../Peripheral/src/%.c
-	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -I"/Users/wangz/pdaltmode/Debug" -I"/Users/wangz/pdaltmode/Core" -I"/Users/wangz/pdaltmode/User" -I"/Users/wangz/pdaltmode/Peripheral/inc" -std=gnu99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
+	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -I"/home/hp/pdaltmode/Debug" -I"/home/hp/pdaltmode/Core" -I"/home/hp/pdaltmode/User" -I"/home/hp/pdaltmode/Peripheral/inc" -std=gnu99 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
+

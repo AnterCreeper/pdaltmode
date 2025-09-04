@@ -480,7 +480,7 @@ int PD_Detect(pd_state_t* PD_Ctl) {
             if(PD_Ctl->Det_Cnt == 5) {
                 PD_Ctl->Det_Cnt = 0;
                 PD_Disconnect(PD_Ctl);
-                BC_Disconnect();
+                BC_Disconnect(&PD_Ctl->BC_Ctl);
             }
             return -1;
         }
@@ -742,7 +742,7 @@ void PD_VDM_Proc(pd_state_t* PD_Ctl) {
         break;
     case STA_DP_CONFIG:
         PD_Ctl->DP_Status.Enabled = ENABLE;
-        PD_Ctl->Timer = TIM_GetTimer(); 
+        PD_Ctl->Timer = TIM_GetTimer(); //Set Timer start
         printf("Perform DP Aux HPD cycle\r\n");
         GPIO_Toggle_DPSIG(RESET);
         if(PD_Delay(5, PD_Ctl)) return;

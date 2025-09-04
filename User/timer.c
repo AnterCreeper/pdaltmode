@@ -1,4 +1,5 @@
 #include "timer.h"
+#include "sys.h"
 #include <ch32x035_tim.h>
 
 volatile timer_t TIM1_CNT;
@@ -80,12 +81,20 @@ void TIM_WaitL(timer_t next_timer) {
 int TIM_Register(void* func, void* args) {
     if(!func) return -1;
     for(int i = 0; i < TIM_IRQ_SIZE; i++) {
+    //Check
+        if(TIM_IRQ[i].func == func) {
+            printf("Warning: TIM function register multiple times\r\n");
+            return -1;
+        }
+    }
+    for(int i = 0; i < TIM_IRQ_SIZE; i++) {
         if(!TIM_IRQ[i].func) {
             TIM_IRQ[i].func = func;
             TIM_IRQ[i].args = args;
             return 0;
         }
     }
+    assert("failed to register TIM function");
     return -1;
 }
 

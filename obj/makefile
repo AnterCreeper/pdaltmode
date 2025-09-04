@@ -1,5 +1,5 @@
 ################################################################################
-# MRS Version: 2.1.0
+# MRS Version: 2.2.0
 # Automatically-generated file. Do not edit!
 ################################################################################
 -include ../makefile.init
@@ -55,7 +55,7 @@ main-build: pdaltmode.elf secondary-outputs
 
 # Tool invocations
 pdaltmode.elf: $(OBJS) $(USER_OBJS)
-	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -T "/Users/wangz/pdaltmode/Ld/Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"pdaltmode.map" --specs=nosys.specs -o "pdaltmode.elf" $(OBJS) $(USER_OBJS) $(LIBS) -lprintf
+	@	riscv-wch-elf-gcc -march=rv32imacxw -mabi=ilp32 -msmall-data-limit=8 -mstrict-align -msave-restore -fmax-errors=20 -Ofast -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -flto -Werror -Wunused -Wall -Wno-format -g -T "/home/hp/pdaltmode/Ld/Link.ld" -nostartfiles -Xlinker --gc-sections -Xlinker --print-memory-usage -Wl,-Map,"pdaltmode.map" --specs=nosys.specs -o "pdaltmode.elf" $(OBJS)  $(LIBS) -lprintf
 pdaltmode.hex: pdaltmode.elf
 	@	riscv-wch-elf-objcopy -O ihex "pdaltmode.elf" "pdaltmode.hex"
 pdaltmode.lst: pdaltmode.elf
@@ -65,7 +65,7 @@ pdaltmode.siz: pdaltmode.elf
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE)$(S_DEPS)$(S_UPPER_DEPS)$(ASM_DEPS)$(ASM_UPPER_DEPS)$(C_DEPS) pdaltmode.elf
+	-$(RM) $(OBJS) $(EXPANDS) $(CALLGRAPH_DOT) $(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE)$(S_DEPS)$(S_UPPER_DEPS)$(ASM_DEPS)$(ASM_UPPER_DEPS)$(C_DEPS) pdaltmode.elf
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)
 

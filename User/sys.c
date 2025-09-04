@@ -54,7 +54,6 @@ void SYS_INIT() {
     printf("sys_clk: %d\r\n", SystemCoreClock);
     printf("chip_id: 0x%08x\r\n", DBGMCU_GetCHIPID());
     printf("rom_size_kib: %d\r\n", ESIG->FLACAP);
-
     /*
     char str0[8], str1[32];
     SYS_Test_Arch(str0);
@@ -70,20 +69,19 @@ void SYS_SLP() {
 #ifdef SLP_ENABLE
     printf("Enter SLP Mode\r\n");
     TIM_PAUSE();
-#endif
+    NVIC_DisableIRQ(EXTI7_0_IRQn);
     EXTI_ClearITPendingBit(EXTI_Line14);
     EXTI_ClearITPendingBit(EXTI_Line15);
-    //NVIC_DisableIRQ(EXTI7_0_IRQn);
-    NVIC_EnableIRQ(EXTI15_8_IRQn);
+    NVIC_EnableIRQ(EXTI15_8_IRQn); //Set Wakeup Source from PD Lines
 #ifdef LP_ENABLE
     PWR_EnterSTOPMode(PWR_STOPEntry_WFI);
     //PWR_EnterSTANDBYMode();
 #else
     __WFI();
 #endif
-    //EXTI_ClearITPendingBit(EXTI_Line0);
-    //NVIC_EnableIRQ(EXTI7_0_IRQn);
-#ifdef SLP_ENABLE
+    NVIC_DisableIRQ(EXTI15_8_IRQn);
+    EXTI_ClearITPendingBit(EXTI_Line0);
+    NVIC_EnableIRQ(EXTI7_0_IRQn);
     TIM_RUN();
 #endif
     return;

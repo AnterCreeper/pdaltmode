@@ -46,17 +46,18 @@ void BC_INIT(bc_state_t* BC_Ctl) {
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOC, &GPIO_InitStructure);
     BC_Ctl->status = STA_BCIDLE;
-    return;
-}
-
-void BC_Connect(bc_state_t* BC_Ctl) {
-    BC_Ctl->status = STA_WAIT;
-    BC_Ctl->timer = TIM_GetTimer();
     TIM_Register(BC_Proc, BC_Ctl);
     return;
 }
 
-void BC_Disconnect() {
+void BC_Connect(bc_state_t* BC_Ctl) {
+    BC_Ctl->timer = TIM_GetTimer();
+    BC_Ctl->status = STA_WAIT;
+    return;
+}
+
+void BC_Disconnect(bc_state_t* BC_Ctl) {
     BC_DM_Toggle_0V0();
+    BC_Ctl->status = STA_BCIDLE;
     return;
 }

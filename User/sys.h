@@ -19,7 +19,7 @@
 
 #define SLP_ENABLE  //System Sleep Mode Enable
 #ifdef SLP_ENABLE
-//#define LP_ENABLE   //System Low Power Mode Enable, need comment for debug
+//#define LP_ENABLE   //System Low Power Mode Enable, comment while debugging
 #endif
 
 #define ESIG ((ESIG_Typedef *)(uint32_t)0x1FFFF7E0)
