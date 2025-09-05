@@ -1,10 +1,10 @@
 # USB PD Alt-mode Negotiation
 
-If any questions, welcome for Issues & PR   
+If any questions, welcome for Issues & PRs   
 如果有疑问，欢迎提交Issues或PR
 
-**WARNING! This Project is not been fully tested, use at your own risk!**   
-**警告！该项目未经充分的测试，使用需要你自己衡量**
+**WARNING! This Project is not been fully productive tested, use at your own risk!**   
+**警告！该项目未经充分的生产测试，使用需要你自己衡量**
 
 ### License
 
@@ -13,9 +13,8 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 
 ### TODO
 
-1. fix TC358867XBG no signal issue，修复无视频信号输出的BUG
-2. Type-C DisplayPort Pin Assignment Decision，Type-C DP信号管脚使用的选择逻辑
-3. Active Cable Support (However I have no such one. lol)，主动线的VDM逻辑(不过由于我没有这样的线，大概率无法完成支持)
+1. Active Cable Support (However I have no such one. lol) 主动线的VDM逻辑(不过由于我没有这样的线，大概率无法完成支持)
+2. Test Audio Transmission Function
 
 ### Overview
 
@@ -37,10 +36,14 @@ Doc. 1 and 2 can be accessed from https://github.com/usb-c/USB-Type-C
 For Doc. 3, since **DISTRIBUTION TO NON-MEMBERS IS PROHIBITED**, contact me at [wangzhihao9@hotmail.com](mailto:wangzhihao9@hotmail.com)  
 Doc.4 is located at https://glenwing.github.io/docs/DP-1.2.pdf
 
-Datasheet of TC358867XBG is included in the project, which include external LICENSE.
+Datasheet of TC358867XBG is included in the project, which includes external LICENSE.
+
+Some other Specification needs:
+1. CEA 861-E: A DTV Profile for Uncompressed High Speed Digital Interfaces
+2. IEC60958 Digital Audio Interfaces
 
 ### Usage
 
 1. Download and Open with MounRiver Studio II [Download Page](http://www.mounriver.com/download)
-2. Compile and Run
-3. ~~Files except in User is remain unchanged from default.~~
+2. Connect the board with WCH Link-E, then Compile and Run
+4. ~~Files except in User is remain unchanged from default.~~
