@@ -13,7 +13,7 @@
 #define MPD_PRE         DP_PRE_0
 
 //Test Pattern
-//#define MPD_TEST        COLOR_BAR
+#define MPD_TEST        COLOR_BAR
 #define MPD_TEST_COLOR  0x114514
 #define MPD_PXLPARAM    0x01130111
 
@@ -135,14 +135,19 @@
 #define DP0_MISC		0x0658
 #define MAX_TU_SYMBOL(x)    ((x) << 23)
 #define TU_SIZE(x)		    ((x) << 16)
-#define FMT_RGB         (0 << 1)
-#define FMT_YUV422      (1 << 1)
-#define FMT_YUV444      (2 << 1)
+
+#define FMT_SRGB        (4 << 1)
+#define FMT_ARGB        (12 << 1)
+#define FMT_YUV422      (13 << 1)
+#define FMT_YUV444      (14 << 1)
+
 #if(MPD_DP_BPP == OPXLFMT_RGB888)
 #define BPC             (1 << 5) //BPC_8
 #else
 #define BPC				(0 << 5) //BPC_6
 #endif
+#define MISC0_ASYNC_CLK     0
+#define MISC0_SYNC_CLK      BIT(0)
 
 #define DP0_AUXCFG0		0x0660
 #define DP0_AUXCFG1		0x0664
@@ -198,7 +203,7 @@
 #endif
 
 //Secondary-data Packet Type
-#define AUD_PKT_ID      170 //refer to excel sheet(?)
+#define AUD_PKT_ID      170 //refer to excel sheet(?) FIXME
 #define AUD_IF_TYPE     0x84    //CEA-861-E InfoFrame, 0x80 + 0x04(Audio InfoFrame)
 
 #define AUD_CC          1   //2 Channels
@@ -212,8 +217,8 @@
 #define AUD_CA          0   //Audio Channel Assignment, except zero is invalid for stereo
 
 #define AUD_LFEPBL      0   //LFE Playback Level
-#define AUD_LSV         0   //Audio Attenuation Level(?)
-#define AUD_DM_IF       0   //Audio Down-mix Inhibit Flag, 1 to prohibit down-spec.mix audio
+#define AUD_LSV         0   //Audio Attenuation Level
+#define AUD_DM_IF       0   //Audio Down-mix Inhibit Flag, 1 to prohibit down-mix audio
 
 #define AUD_MAX_VSAMPLE     15  //refer to device spec
 #define AUD_MAX_HSAMPLE     15  //refer to device spec
@@ -447,9 +452,10 @@
 #define DPCD_ENHANCED_FRAME_EN      BIT(15)
 #define DPCD_LANES(x)   ((x) << 8)
 
-#define MPD_VSDELAY                 MPD_HFPR
-#define MPD_DP_VIDGEN_N             32768 //refer to DP spec, using async mode
-#define MPD_MAX_TU_SYMBOL           42 //DIV_ROUND_UP(in_bw * TU_SIZE_RECOMMENDED, out_bw), in_bw=148.5MHz*3B, out_bw=2*2700Mbps/8bpB
+//critical variables.
+#define MPD_VSDELAY                 MPD_HFPR    //refer to datasheet and trails, should be non-zero.
+#define MPD_DP_VIDGEN_N             32768       //refer to DP spec, here use async mode
+#define MPD_MAX_TU_SYMBOL           62          //use maximum 62, from *trail and error*.
 #define MPD_TU_SIZE_RECOMMENDED     63
 
 //HTIM01, HTIM02, VTIM01, VTIM02

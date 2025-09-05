@@ -313,11 +313,10 @@ void MPD_CfgStream(){
 
     IIC_WriteReg(VP_TIM, (void*)rgb_timing, 16);
     IIC_WriteRegI(VFUEN0, VFUEN);    //Commit Timing Variable
-    IIC_WriteReg(DP0_TIM, (void*)dp_timing, 20);
-
     IIC_WriteRegI(DPIPXLFMT, MPD_DPI_POL | MPD_DPI_FMT | MPD_DPI_BPP);
-    //FIXME
-    IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(MPD_MAX_TU_SYMBOL) | TU_SIZE(MPD_TU_SIZE_RECOMMENDED) | BPC | FMT_YUV422 | BIT(3) | BIT(4));  //DP0_Misc
+
+    IIC_WriteReg(DP0_TIM, (void*)dp_timing, 20);
+    IIC_WriteRegI(DP0_MISC, MAX_TU_SYMBOL(MPD_MAX_TU_SYMBOL) | TU_SIZE(MPD_TU_SIZE_RECOMMENDED) | BPC | FMT_SRGB | MISC0_ASYNC_CLK);  //DP0_Misc
     IIC_WriteRegI(DP0_VIDMNGEN1, MPD_DP_VIDGEN_N);
 
 #ifdef MPD_AUDIO
