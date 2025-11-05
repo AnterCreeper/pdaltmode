@@ -4,9 +4,12 @@
 #include "mpd.h"
 #include "debug.h"
 
-#define GETBITS(x, n, m) ((x >> n) & ((1 << (m - n + 1)) - 1))
+//#define GETBITS(x, n, m) ((x >> n) & ((1 << (m - n + 1)) - 1))
 
-//Chip always write data in 4bytes
+//unsigned bit field extract, return X[m:n] => sll + srl (little endian, m is MSB, n is LSB)
+#define GETBITS(x, n, m) (((unsigned long)(x) << (__riscv_xlen - 1 - m)) >> (__riscv_xlen - 1 - m + n))
+
+//chip always write data in 4bytes
 #define IIC_WriteReg(address,data,len) __IIC_WriteReg(MPD_DEV_ADR, address, (uint32_t)(data), len, 0, 0)
 #define IIC_WriteRegI(address,data) __IIC_WriteReg(MPD_DEV_ADR, address, data, 4, 1, 0)
 #define IIC_ReadReg(address,data,len) __IIC_ReadReg(MPD_DEV_ADR, address, (uint32_t)(data), len, 0, 0)
