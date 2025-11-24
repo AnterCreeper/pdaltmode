@@ -4,9 +4,9 @@
 #include "mpd.h"
 #include "debug.h"
 
+//#define GENMASK(n, m)    (((1 << (m - n + 1)) - 1) << n)
+//#define GETBITS(x, n, m) ((x & GENMASK(n, m)) >> n)
 //#define GETBITS(x, n, m) ((x >> n) & ((1 << (m - n + 1)) - 1))
-
-//unsigned bit field extract, return X[m:n] => sll + srl (little endian, m is MSB, n is LSB)
 #define GETBITS(x, n, m) (((unsigned long)(x) << (__riscv_xlen - 1 - m)) >> (__riscv_xlen - 1 - m + n))
 
 //chip always write data in 4bytes
