@@ -1,4 +1,4 @@
-# USB PD Alt-mode Negotiation
+# USB PD Alt-mode Host-side Negotiation
 
 If any questions, welcome for Issues & PRs   
 如果有疑问，欢迎提交Issues或PR
@@ -18,7 +18,7 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 
 ### Overview
 
-This Project is used to perform PD Logic for Host based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
+This Project is used to perform PD Logic for Host-side based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
 该项目基于来自 WCH 的低成本 CH32X035 微控制器，包含了所需的所有主机端的 USB Power Delivery 协议的功能，以实现 Type-C 上 DisplayPort 视频输出功能，可用于 PCB 面积紧凑场景。
 
 Besides, This Project include a validation hardware with GERBER and schematics, 4 layers JLC04161H-3313 Stacking, using TOSHIBA TC358867XBG to convert Video stream from Parrallel to DisplayPort Signal.   
