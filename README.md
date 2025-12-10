@@ -39,8 +39,8 @@ Doc.4 is located at https://glenwing.github.io/docs/DP-1.2.pdf
 Datasheet of TC358867XBG is included in the project, which includes external LICENSE.
 
 Some other Specification related to Audio which is needed: (May have copies over web.archive.org)
-1. CEA 861-E: A DTV Profile for Uncompressed High Speed Digital Interfaces [Link](https://members.cta.tech/ctaPublicationDetails/?id=95190170-1031-e811-bbd4-0003ff52999d)
-2. IEC60958: Digital Audio Interfaces [Link](https://webstore.iec.ch/en/publication/62829)
+1. [CEA 861-E](https://members.cta.tech/ctaPublicationDetails/?id=95190170-1031-e811-bbd4-0003ff52999d): A DTV Profile for Uncompressed High Speed Digital Interfaces
+2. [IEC60958](https://webstore.iec.ch/en/publication/62829): Digital Audio Interfaces
 
 ### Usage
 
