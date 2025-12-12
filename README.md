@@ -3,8 +3,8 @@
 If any questions, welcome for Issues & PRs   
 如果有疑问，欢迎提交Issues或PR
 
-**WARNING! This Project is not been fully productive tested, use at your own risk!**   
-**警告！该项目未经充分的生产测试，使用需要你自己衡量**
+**WARNING! This Project is not been fully long-term productive tested and without warranty of any kind, use at your own risk!**   
+**警告！该项目未经充分的长期生产环境测试，作者不作任何保证，使用需要你自己衡量**
 
 ### License
 
