@@ -341,9 +341,9 @@
 		)
 		(uuid f0072e33-6124-4a00-9c65-80696b3ebcc6)
 	)
-	(text "Change Debug Pin def"
+	(text "Change Debug Pin def; Change C30 to 470nF"
 		(exclude_from_sim no)
-		(at 86.36 66.802 0)
+		(at 64.77 66.802 0)
 		(effects
 			(font
 				(face "Courier New")
@@ -351,12 +351,13 @@
 				(thickness 0.508)
 				(bold yes)
 			)
+			(justify left)
 		)
 		(uuid "09df6fa5-78e9-4253-92d7-176d105f005d")
 	)
-	(text "Change TXS0104E to LSF0204 and add IIC PU resistor;"
+	(text "Change TXS0104E to LSF0204 and add R21,R24"
 		(exclude_from_sim no)
-		(at 119.38 60.452 0)
+		(at 64.77 60.452 0)
 		(effects
 			(font
 				(face "Courier New")
@@ -364,6 +365,7 @@
 				(thickness 0.508)
 				(bold yes)
 			)
+			(justify left)
 		)
 		(uuid "14ae2334-d108-40a3-a36e-7ebe3a9939a9")
 	)
@@ -434,7 +436,7 @@
 	)
 	(text "Change R9,R20 to 30kΩ; R19 to 180kΩ; Change USB-C footprint; Fix AUX channel orientation"
 		(exclude_from_sim no)
-		(at 158.75 54.102 0)
+		(at 64.77 54.102 0)
 		(effects
 			(font
 				(face "Courier New")
@@ -442,6 +444,7 @@
 				(thickness 0.508)
 				(bold yes)
 			)
+			(justify left)
 		)
 		(uuid "71062be9-0d5c-4b67-b5d5-406908f8b34d")
 	)
@@ -472,7 +475,7 @@
 	)
 	(text "The first edition of EVB"
 		(exclude_from_sim no)
-		(at 90.424 47.752 0)
+		(at 64.77 47.752 0)
 		(effects
 			(font
 				(face "Courier New")
@@ -480,6 +483,7 @@
 				(thickness 0.508)
 				(bold yes)
 			)
+			(justify left)
 		)
 		(uuid "b9aaf498-8955-40dd-b5c9-bf10e94f4728")
 	)

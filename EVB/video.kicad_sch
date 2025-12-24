@@ -3932,6 +3932,16 @@
 		)
 		(uuid "82036a5d-a875-477f-aaf9-7d721b7bce41")
 	)
+	(text "10ms max"
+		(exclude_from_sim no)
+		(at 183.896 135.89 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "e41c65c7-6b6e-433d-844a-8f6174ee191a")
+	)
 	(text "address: 7'b1101000"
 		(exclude_from_sim no)
 		(at 31.75 118.11 0)
@@ -4073,12 +4083,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "81270b68-a402-404d-9e96-6ba7f89d0770")
-	)
-	(junction
-		(at 194.31 93.98)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "82288ede-4847-4671-9c0d-8e24556ec8d2")
 	)
 	(junction
 		(at 248.92 73.66)
@@ -5140,6 +5144,16 @@
 	)
 	(wire
 		(pts
+			(xy 180.34 96.52) (xy 194.31 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "63d698a3-f4c9-4d36-864a-44e17ee345f4")
+	)
+	(wire
+		(pts
 			(xy 115.57 34.29) (xy 120.65 34.29)
 		)
 		(stroke
@@ -5827,16 +5841,6 @@
 			(type default)
 		)
 		(uuid "a2ab81cd-c90e-4631-bd43-8e703de71d24")
-	)
-	(wire
-		(pts
-			(xy 194.31 93.98) (xy 194.31 96.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2b8bd80-e594-45e4-b654-ed14fb6e5ee7")
 	)
 	(wire
 		(pts
@@ -8149,7 +8153,7 @@
 		(dnp no)
 		(uuid "1e0cee13-9bcc-4a4f-96f6-ce4218c7965a")
 		(property "Reference" "C30"
-			(at 185.42 131.064 0)
+			(at 182.88 131.064 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8157,8 +8161,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1uF"
-			(at 185.42 133.35 0)
+		(property "Value" "470nF"
+			(at 182.88 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9078,6 +9082,73 @@
 			(project "pdaltmode"
 				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/d3aad457-394a-4e23-9214-5365be8f4e5d"
 					(reference "R14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 180.34 96.52 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "44d3b9a3-d904-4730-b330-2f30e8538eab")
+		(property "Reference" "#PWR048"
+			(at 184.15 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 176.53 96.5199 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 180.34 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 180.34 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b555a8e7-8690-45cd-b2a6-407b32c73268")
+		)
+		(instances
+			(project "pdaltmode"
+				(path "/cbfeefcb-b645-46cd-9b01-7e54716c2cc6/d3aad457-394a-4e23-9214-5365be8f4e5d"
+					(reference "#PWR048")
 					(unit 1)
 				)
 			)

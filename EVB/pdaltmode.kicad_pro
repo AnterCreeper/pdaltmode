@@ -58,20 +58,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        [
-          "solder_mask_bridge|91094535|104098355|104a909a-5112-4362-a12f-dbf396de4f5c|e3b92cc4-e69d-419a-8719-4b5d55a3f527",
-          ""
-        ],
-        [
-          "solder_mask_bridge|91322700|103623829|edb78302-f7bb-4339-8f6c-3ac46b70988b|854bb8b9-115d-40a3-b1d4-0aeeb0611e4e",
-          ""
-        ],
-        [
-          "solder_mask_bridge|91322700|103870190|104a909a-5112-4362-a12f-dbf396de4f5c|e3b92cc4-e69d-419a-8719-4b5d55a3f527",
-          ""
-        ]
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
