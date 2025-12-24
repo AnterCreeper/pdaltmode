@@ -3,8 +3,8 @@
 If any questions, welcome for Issues & PRs   
 如果有疑问，欢迎提交Issues或PR
 
-**WARNING! This Project is not been fully productive tested, use at your own risk!**   
-**警告！该项目未经充分的生产测试，使用需要你自己衡量**
+**WARNING! This Project is not been fully long-term productive tested and without warranty of any kind, use at your own risk!**   
+**警告！该项目未经充分的长期生产环境测试，作者不作任何保证，使用需要你自己衡量**
 
 ### License
 
@@ -21,7 +21,7 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 This Project is used to perform PD Logic for Host-side based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
 该项目基于来自 WCH 的低成本 CH32X035 微控制器，包含了所需的所有主机端的 USB Power Delivery 协议的功能，以实现 Type-C 上 DisplayPort 视频输出功能，可用于 PCB 面积紧凑场景。
 
-Besides, This Project include a validation hardware with GERBER and schematics, 4 layers JLC04161H-3313 Stacking, using TOSHIBA TC358867XBG to convert Video stream from Parrallel to DisplayPort Signal.   
+Besides, This Project include a validation hardware with GERBER and schematics, 4 layers JLC04161H-3313 Stacking, using TOSHIBA TC358867XBG to convert Video stream from Parallel to DisplayPort Signal.   
 此外，该项目附有一个验证硬件，包含 GERBER 和原理图与装配图纸，四层 1.6mm JLC04161H-3313 叠层，采用 TOSHIBA TC358867XBG 将 RGB 并行接口 转换至 DisplayPort 信号输出。
 
 ![PCB Preview Picture](https://github.com/AnterCreeper/pdaltmode/blob/main/evb-front.jpg?raw=true)
@@ -39,8 +39,8 @@ Doc.4 is located at https://glenwing.github.io/docs/DP-1.2.pdf
 Datasheet of TC358867XBG is included in the project, which includes external LICENSE.
 
 Some other Specification related to Audio which is needed: (May have copies over web.archive.org)
-1. CEA 861-E: A DTV Profile for Uncompressed High Speed Digital Interfaces [Link](https://members.cta.tech/ctaPublicationDetails/?id=95190170-1031-e811-bbd4-0003ff52999d)
-2. IEC60958: Digital Audio Interfaces [Link](https://webstore.iec.ch/en/publication/62829)
+1. [CEA 861-E](https://members.cta.tech/ctaPublicationDetails/?id=95190170-1031-e811-bbd4-0003ff52999d): A DTV Profile for Uncompressed High Speed Digital Interfaces
+2. [IEC60958](https://webstore.iec.ch/en/publication/62829): Digital Audio Interfaces
 
 ### Usage
 
