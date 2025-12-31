@@ -21,8 +21,8 @@ This project is licensed under the LGPL-2.1-or-later license. **DO NOT** downloa
 This Project is used to perform PD Logic for Host-side based on the cost-effective (30 cents at the time of writing) WCH CH32X035 32-bit RISC-V microcontroller, to achieve DisplayPort output over Type-C, which can be used on space compact scene.    
 该项目基于来自 WCH 的低成本 CH32X035 微控制器，包含了所需的所有主机端的 USB Power Delivery 协议的功能，以实现 Type-C 上 DisplayPort 视频输出功能，可用于 PCB 面积紧凑场景。
 
-Besides, This Project include a validation hardware with GERBER and schematics, 4 layers JLC04161H-3313 Stacking, using TOSHIBA TC358867XBG to convert Video stream from Parallel to DisplayPort Signal.   
-此外，该项目附有一个验证硬件，包含 GERBER 和原理图与装配图纸，四层 1.6mm JLC04161H-3313 叠层，采用 TOSHIBA TC358867XBG 将 RGB 并行接口 转换至 DisplayPort 信号输出。
+Besides, This Project include a validation hardware with GERBER and schematics, 4 layers JLC04081H-3313 Stacking, using TOSHIBA TC358867XBG to convert Video stream from Parallel to DisplayPort Signal.   
+此外，该项目附有一个验证硬件，包含 GERBER 和原理图与装配图纸，四层 0.8mm JLC04081H-3313 叠层，采用 TOSHIBA TC358867XBG 将 RGB 并行接口 转换至 DisplayPort 信号输出。
 
 ![PCB Preview Picture](https://github.com/AnterCreeper/pdaltmode/blob/main/evb-front.jpg?raw=true)
 
