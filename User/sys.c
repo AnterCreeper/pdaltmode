@@ -50,7 +50,7 @@ void SYS_INIT() {
 #endif
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     printf("%s version %s by %s\r\n", TARGET_PROJECT, TARGET_VERSION, TARGET_AUTHOR);
-    printf("%s %s %s %s\r\n", TARGET_COMPILER, __VERSION__, __DATE__, __TIME__);
+    printf("%s %s %s\r\n", __VERSION__, __DATE__, __TIME__);
     printf("sys_clk: %d\r\n", SystemCoreClock);
     printf("chip_id: 0x%08x\r\n", DBGMCU_GetCHIPID());
     printf("rom_size_kib: %d\r\n", ESIG->FLACAP);

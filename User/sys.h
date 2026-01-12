@@ -5,17 +5,7 @@
 
 #define TARGET_PROJECT  "pdaltmode"
 #define TARGET_VERSION  "0.2a"
-#define TARGET_AUTHOR   "Anter"
-
-#ifdef __clang
-#define TARGET_COMPILER "clang"
-#else
-#ifdef __GNUC__
-#define TARGET_COMPILER "gcc"
-#else
-#define TARGET_COMPILER "Unknown"
-#endif
-#endif
+#define TARGET_AUTHOR   "antercreeper <wangzhihao9@hotmail.com>"
 
 #define SLP_ENABLE  //System Sleep Mode Enable
 #ifdef SLP_ENABLE
